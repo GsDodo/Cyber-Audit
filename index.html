@@ -18,6 +18,7 @@
     body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
     a{color:var(--brand);text-decoration:none}
     .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
     /* HERO */
     .hero{
       position:relative;overflow:hidden;border-bottom:1px solid var(--line);
@@ -34,6 +35,7 @@
     .brand__titles h1{margin:0;font-size:22px}
     .brand__titles p{margin:2px 0 0;color:var(--muted);font-size:14px}
     .actions{display:flex;gap:10px;align-items:center}
+
     .btn{
       border:1px solid var(--line);background:var(--panel);color:var(--text);
       padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:var(--shadow);
@@ -41,11 +43,13 @@
     }
     .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
     .btn--ghost{background:transparent}
+
     .toggle{display:inline-flex;gap:8px;align-items:center}
     .toggle input{appearance:none;width:44px;height:24px;background:var(--line);border-radius:999px;position:relative;outline:none;cursor:pointer}
     .toggle input:before{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.25s}
     [data-theme="dark"] .toggle input{background:#1f2937}
     .toggle input:checked:before{left:23px}
+
     /* TABS */
     .tabs{margin:18px 0 30px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
     .tab{
@@ -55,6 +59,7 @@
     .tab.active{color:var(--text);background:linear-gradient(180deg,rgba(91,141,239,.15),transparent)}
     .panel{display:none;padding:22px 0}
     .panel.active{display:block}
+
     /* CARDS */
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
     .card{
@@ -67,25 +72,33 @@
     .cta a{border:1px solid var(--line);padding:10px 12px;border-radius:10px;background:var(--panel);font-weight:600}
     .cta a.primary{background:var(--brand);color:#fff;border-color:transparent}
     .tip{position:absolute;top:10px;right:10px;font-size:12px;color:var(--muted)}
+
     /* REFERENCES */
     .refbar{display:flex;gap:10px;align-items:center;margin-bottom:12px}
     .refbar input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);color:var(--text)}
     .ref-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
     .ref{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
     .ref small{color:var(--muted)}
+
     /* GUIDE */
     ol.guide{padding-left:18px}
     ol.guide li{margin:10px 0}
     .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--line);padding:2px 6px;border-radius:6px}
+
     /* KPI */
     .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
     .kpi{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card)}
     .kpi h4{margin:0 0 6px}
     .kpi .val{font-size:24px;font-weight:800}
     .kpi.ok .val{color:var(--accent)} .kpi.warn .val{color:var(--warn)} .kpi.bad .val{color:var(--danger)}
+
+    /* IFRAME ISO */
+    .embed-frame{ width:100%; min-height:1200px; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:var(--shadow); }
+
     /* FOOTER */
     footer{border-top:1px solid var(--line);margin-top:24px}
     .foot{padding:14px 0;color:var(--muted);font-size:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
     /* TOAST */
     .toast{position:fixed;right:16px;bottom:16px;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);transition:.25s}
     .toast.show{opacity:1;transform:translateY(0)}
@@ -221,6 +234,15 @@
         <div class="kpi warn"><h4>Fournisseurs évalués</h4><div class="val" data-val="65">65%</div><small>Cible ≥ 80%</small></div>
       </div>
     </section>
+
+    <!-- ISO 27001 (nouvel onglet) -->
+    <section id="panel-iso" class="panel" role="tabpanel" aria-labelledby="iso">
+      <div class="meta" style="margin-bottom:10px">
+        <strong>ISO/IEC 27001:2022 — Annexe A (93 contrôles)</strong><br>
+        Si l’affichage intégré ne se charge pas, ouvrez : <a href="iso27001_annexA_93.html" target="_blank" rel="noopener">iso27001_annexA_93.html</a>.
+      </div>
+      <iframe class="embed-frame" src="iso27001_annexA_93.html" title="ISO 27001 Annexe A — 93 contrôles" loading="lazy"></iframe>
+    </section>
   </main>
 
   <footer>
@@ -263,12 +285,21 @@
     const hash = location.hash.replace('#','');
     if(hash){ const t = tabs.find(x=>x.dataset.tab===hash); if(t) showPanel(hash); }
 
-    // --- DOWNLOAD TOAST ---
+    // --- DOWNLOAD TOAST + "telecharger tout" ---
     const toast = document.getElementById('toast');
     const showToast = (msg='Téléchargement lancé…')=>{
       toast.textContent = msg; toast.classList.add('show');
       setTimeout(()=>toast.classList.remove('show'), 1800);
-   st('Téléchargement des livrables…');
+    };
+    // lien individuel
+    document.querySelectorAll('[data-dl]').forEach(a=>{
+      a.addEventListener('click', ()=> showToast());
+    });
+    // tout le pack
+    document.getElementById('dlAll').addEventListener('click', ()=>{
+      ['questionnaire_mapping.xlsx','SoA_pre_rempli.docx','registre_risques.xlsx','rapport_audit.pptx','rapport_audit.pdf','kpi_dashboard.xlsx']
+        .forEach((f,i)=> setTimeout(()=> window.open(f,'_blank'), i*220));
+      showToast('Téléchargement des livrables…');
     });
 
     // --- REFS FILTER ---
@@ -282,23 +313,24 @@
         it.style.display = text.includes(s) ? '' : 'none';
       });
     }
-    q.addEventListener('input', filter);
-    clearBtn.addEventListener('click', ()=>{ q.value=''; filter(); q.focus(); });
+    if(q){ q.addEventListener('input', filter); }
+    if(clearBtn){ clearBtn.addEventListener('click', ()=>{ q.value=''; filter(); q.focus(); }); }
 
     // --- KPI COLOR (auto-classes ok/warn/bad en fonction des cibles affichées) ---
     document.querySelectorAll('.kpi').forEach(k=>{
-      // Heuristique : on lit la ligne "Cible …"
       const tgtTxt = k.querySelector('small')?.textContent || '';
       const valEl = k.querySelector('.val');
       const val = parseFloat((valEl.dataset.val||'0').toString().replace(',','.'));
       let ok=true;
-      if(tgtTxt.includes('≥')) { ok = val >= parseFloat(tgtTxt.replace(/[^0-9\\.]/g,'')); }
-      if(tgtTxt.includes('≤')) { ok = val <= parseFloat(tgtTxt.replace(/[^0-9\\.]/g,'')); }
+      const target = parseFloat(tgtTxt.replace(/[^0-9\\.]/g,'')||'0');
+      if(tgtTxt.includes('≥')) { ok = val >= target; }
+      if(tgtTxt.includes('≤')) { ok = val <= target; }
       k.classList.remove('ok','warn','bad');
-      k.classList.add(ok ? 'ok' : (tgtTxt.includes('≥') ? (val>=0.8*parseFloat(tgtTxt.replace(/[^0-9\\.]/g,''))?'warn':'bad')
-                                                      : (val<=1.25*parseFloat(tgtTxt.replace(/[^0-9\\.]/g,''))?'warn':'bad')));
+      k.classList.add(ok ? 'ok' : (tgtTxt.includes('≥') ? (val>=0.8*target?'warn':'bad')
+                                                      : (val<=1.25*target?'warn':'bad')));
     });
 
+    // Footer année
     document.getElementById('y').textContent = new Date().getFullYear();
   </script>
 </body>
