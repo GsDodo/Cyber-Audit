@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unified Cyber Audit Pack — ISO 27001:2022 • NIST CSF 2.0 • NIS2/ENISA</title>
   <meta name="description" content="Pack d’audit cybersécurité unifié : ISO 27001:2022, NIST CSF 2.0 et NIS2/ENISA. Téléchargements, références officielles, guide d’utilisation et KPI.">
+  <link rel="icon" href="logo.png" />
   <style>
     :root{
       --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8;
@@ -17,34 +18,14 @@
       --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb;
       --shadow:0 8px 20px rgba(15,23,42,.08);
     }
+
     *{box-sizing:border-box}
-    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
+    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
     a{color:var(--brand);text-decoration:none}
     .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 
     /* HERO */
-    .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,.0));}
-    .hero__banner{width:100%;height:240px;background:url('banner.jpg') center/cover no-repeat;filter:saturate(.95) contrast(1.05);}
-    .hero__bar{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:14px 0 18px;}
+    .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,0))}
+    .hero__banner{width:100%;height:240px;background:url('banner.jpg') center/cover no-repeat;filter:saturate(.95) contrast(1.05)}
+    .hero__bar{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:14px 0 18px}
     .brand{display:flex;gap:14px;align-items:center}
-    .brand img{width:44px;height:44px;border-radius:10px;box-shadow:var(--shadow)}
-    .brand__titles h1{margin:0;font-size:22px}
-    .brand__titles p{margin:2px 0 0;color:var(--muted);font-size:14px}
-
-    .actions{display:flex;gap:10px;align-items:center}
-    .btn{
-      border:1px solid var(--line);background:var(--panel);color:var(--text);
-      padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:var(--shadow);
-      display:inline-flex;gap:8px;align-items:center;font-weight:600
-    }
-    .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
-    .btn--ghost{background:transparent}
-
-    /* Toggle Sombre/Clair */
-    .theme-toggle{
-      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);
-      background:var(--panel);color:var(--text);cursor:pointer;user-select:none;
-    }
-    .theme-toggle__switch{
-      width:46px;height:26px;border-radius:999px;background:var(--line);position:relative;display:inline-block;vertical-align:middle;
-    }
