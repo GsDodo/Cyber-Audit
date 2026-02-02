@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NIS2 — Évaluation des mesures (13 domaines) : Oui/Non + Rapport</title>
+  <meta name="description" content="Évaluez la conformité NIS2 par domaines ENISA avec des cases Oui/Non, sauvegarde locale, page de résultats imprimable et export CSV/JSON.">
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8;
+      --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24);
+    }
+    [data-theme="light"]{
+      --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569;
+      --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    a{color:var(--brand);text-decoration:none}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+    header{border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,0))}
+    .bar{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:16px 0}
+    h1{margin:0;font-size:22px}
+    .muted{color:var(--muted);font-size:13px;margin:4px 0 0 0}
+
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
+    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;box-shadow:var(--shadow);font-weight:600}
+    .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
+    .stat{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--panel);font-size:13px;color:var(--muted)}
+    .stat b{color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+    .info{font-size:12px;color:var(--muted)}
+
+    .group{border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);margin:16px 0}
+    .group header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .group h2{margin:0;font-size:18px}
+    .tag{display:inline-block;border-radius:999px;padding:4px 10px;background:rgba(91,141,239,.12);color:var(--brand);font-size:12px;margin-left:10px}
+    .controls{padding:6px 16px 16px}
+    .controls details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}
+    .controls summary{cursor:pointer;padding:10px 12px;font-weight:600}
+    .controls ol{margin:6px 0 14px 28px}
+    .controls li{margin:8px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+    .ref{min-width:70px;color:var(--muted);font-weight:700}
+    .label{flex:1}
+    .yn{display:inline-flex;gap:10px;align-items:center}
+    .yn label{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
+    .yn input{accent-color:var(--brand);}
+
+    footer{border-top:1px solid var(--line);margin-top:24px}
+    .foot{padding:12px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    @media print {.toolbar{display:none} details{open:true}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <div>
+        <h1>NIS2 — Évaluation des mesures (13 domaines ENISA) — Oui/Non</h1>
+        <p class="muted">Structure par domaines (ENISA). Libellés opérationnels/ pédagogiques. Les réponses sont stockées localement (navigateur).</p>
+      </div>
+      <div class="grid" style="max-width:700px">
+        <span class="stat">Global : <b id="g-yes">0</b> Oui • <b id="g-no">0</b> Non • <b id="g-na">0</b> Non répondu • Total <b id="g-total">0</b></span>
+        <span class="stat" id="per-domain"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="toolbar">
+      <button id="btn-report" class="btn btn--brand">🧾 Générer la page de résultats</button>
+      <button id="btn-report-dl" class="btn">💾 Télécharger le rapport (HTML)</button>
+      <button id="btn-csv" class="btn">⬇️ Exporter CSV</button>
+      <button id="btn-json" class="btn">🧩 Télécharger JSON</button>
+      <button id="btn-reset" class="btn">♻️ Réinitialiser</button>
+      <span class="info">Astuce : répondez Oui/Non à chaque mesure ; la page de résultats est imprimable (PDF via le navigateur).</span>
+    </div>
+
+    <!-- Les 13 domaines seront injectés ici -->
+
+    <section class="group">
+      <header><h2>Sources & remarques</h2></header>
+      <div class="controls">
+        <div class="info">
+          Cette page reprend la structuration pratique en <strong>13 domaines</strong> proposée par ENISA, couvrant les obligations de l’art. 21 NIS2.  
+          Utilisez les textes officiels pour les formulations légales exactes.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div>© <span id="y"></span> Évaluation NIS2 (13 domaines) — Auto‑audit</div>
+      <div id="score"></div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Config =====
+    const LS_PREFIX = 'nis2-ctrl-';
+
+    // ===== 13 domaines ENISA (paraphrases opérationnelles) =====
+    // Format: [ "Code", "Titre", [ ["Ref","Intitulé"], ... ] ]
+    const DOMAINS = [
+      ["D1","Politique SSI des réseaux et systèmes", [
+        ["D1.1","Politique SSI approuvée, rôles & responsabilités"],
+        ["D1.2","Objectifs SSI alignés au contexte et exigences"],
+        ["D1.3","Cycle de vie documentaire (diffusion, revue, version)"],
+        ["D1.4","Classification & manipulation de l’information"],
+        ["D1.5","SSI intégrée aux projets et changements"],
+        ["D1.6","Gouvernance sécurité tierce (comités, reporting)"]
+      ]],
+      ["D2","Gestion des risques", [
+        ["D2.1","Méthodologie d’analyse des risques"],
+        ["D2.2","Appétence et critères de risque"],
+        ["D2.3","Registre des risques (menaces, vulnérabilités, impacts)"],
+        ["D2.4","Plans de traitement et suivi"],
+        ["D2.5","Intégration ERM / reporting direction"],
+        ["D2.6","Scénarios & revue annuelle"]
+      ]],
+      ["D3","Gestion des incidents", [
+        ["D3.1","Détection, triage, priorisation"],
+        ["D3.2","Playbooks & rôles IR (tech/com/juridique)"],
+        ["D3.3","Notifications aux autorités/parties prenantes (délais)"],
+        ["D3.4","Journal d’incidents & horodatage fiable"],
+        ["D3.5","Leçons apprises & actions correctives"],
+        ["D3.6","Collecte de preuves (forensic readiness)"]
+      ]],
+      ["D4","Continuité d’activité & gestion de crise", [
+        ["D4.1","BIA, RTO/RPO"],
+        ["D4.2","PRA/PCA (sauvegardes/DRP)"],
+        ["D4.3","Tests réguliers & amélioration continue"],
+        ["D4.4","Plan de crise & communication d’urgence"],
+        ["D4.5","Journalisation & redondance services critiques"]
+      ]],
+      ["D5","Sécurité de la chaîne d’approvisionnement", [
+        ["D5.1","Due diligence fournisseurs & criticité"],
+        ["D5.2","Clauses SSI (audit, notif, sous-traitants)"],
+        ["D5.3","Évaluations périodiques & KPIs"],
+        ["D5.4","Gestion des dépendances & SPOF"],
+        ["D5.5","Plan de sortie/réversibilité (cloud/managed services)"]
+      ]],
+      ["D6","Acquisition, développement & maintenance", [
+        ["D6.1","Exigences SSI dans achats/contrats IT/OT"],
+        ["D6.2","SDLC sécurisé (revues, tests SAST/DAST)"],
+        ["D6.3","Gestion des secrets/clé & configurations"],
+        ["D6.4","Vulnérabilités & patching (SLA)"],
+        ["D6.5","Durcissement des systèmes (benchmarks)"]
+      ]],
+      ["D7","Évaluation de l’efficacité des mesures", [
+        ["D7.1","Programme de mesure (KPI/KRI)"],
+        ["D7.2","Revue d’efficacité (audits, tests)"],
+        ["D7.3","Tableaux de bord & pilotage"],
+        ["D7.4","Amélioration continue et remédiations"]
+      ]],
+      ["D8","Hygiène de base & formation", [
+        ["D8.1","Politiques d’usage acceptable"],
+        ["D8.2","Gestion des correctifs OS/apps/firmware"],
+        ["D8.3","Sauvegardes & restaurations testées"],
+        ["D8.4","Sensibilisation & simulations phishing"],
+        ["D8.5","Inventaire des actifs & EDR/antimalware"]
+      ]],
+      ["D9","Cryptographie", [
+        ["D9.1","Politique crypto & inventaire des usages"],
+        ["D9.2","Algorithmes/conformité (chiffrement, signature)"],
+        ["D9.3","Gestion des clés (rotation, révocation, HSM)"],
+        ["D9.4","Chiffrement au repos & en transit"]
+      ]],
+      ["D10","Ressources humaines & sécurité", [
+        ["D10.1","Screening adapté"],
+        ["D10.2","Clauses SSI & NDA"],
+        ["D10.3","Onboarding/offboarding (droits/équipements)"],
+        ["D10.4","Rôles cyber dans fiches de poste"]
+      ]],
+      ["D11","Contrôle d’accès", [
+        ["D11.1","Moindre privilège & séparation des rôles"],
+        ["D11.2","MFA/CA pour distants & privilèges"],
+        ["D11.3","Revue périodique des droits & traçabilité"],
+        ["D11.4","PAM/coffre-fort à secrets"]
+      ]],
+      ["D12","Gestion des actifs", [
+        ["D12.1","Inventaire matériel/logiciel & owner"],
+        ["D12.2","Classification & étiquetage info"],
+        ["D12.3","Cycle de vie (acquisition/transfert/retrait)"],
+        ["D12.4","Médias amovibles : traçabilité & sécurité"]
+      ]],
+      ["D13","Sécurité environnementale & physique", [
+        ["D13.1","Périmètres & contrôles d’accès physiques"],
+        ["D13.2","Protection environnementale (énergie/clim/incendie)"],
+        ["D13.3","Surveillance (CCTV, alarmes), zones sécurisées"],
+        ["D13.4","Élimination/recyclage sécurisé (supports/équipements)"]
+      ]]
+    ];
+
+    // ===== Rendu =====
+    function renderDomains(){
+      const main = document.querySelector('main.wrap');
+      const sources = document.querySelector('section.group:last-of-type');
+      let total = 0;
+
+      DOMAINS.forEach(([code, title, items])=>{
+        const sec = document.createElement('section');
+        sec.className='group';
+        sec.id = code.toLowerCase();
+        sec.innerHTML = `
+          <header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header>
+          <div class="controls" data-domain="${code}">
+            <details open data-default-open>
+              <summary>Mesures ${code} (${items.length})</summary>
+              <ol></ol>
+            </details>
+          </div>`;
+        const ol = sec.querySelector('ol');
+
+        items.forEach(([ref, label])=>{
+          total++;
+          const li = document.createElement('li');
+          li.dataset.ref = ref;
+          li.dataset.text = label;
+          li.dataset.domain = code;
+          li.innerHTML = `
+            <span class="ref">${ref}</span>
+            <span class="label">${label}</span>
+            <span class="yn">
+              <label title="Oui"><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label>
+              <label title="Non"><input type="radio" name="ctrl-${ref}" value="non"> Non</label>
+            </span>`;
+          // Restore
+          const saved = localStorage.getItem(LS_PREFIX+ref);
+          if(saved){ const inp = li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked = true; }
+          // Listeners
+          li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=>{
+            inp.addEventListener('change', ()=>{
+              localStorage.setItem(LS_PREFIX+ref, inp.value);
+              updateStats();
+            });
+          });
+          ol.appendChild(li);
+        });
+
+        main.insertBefore(sec, sources);
+      });
+
+      document.getElementById('g-total').textContent = total;
+    }
+
+    // ===== Stats =====
+    function computeStats(){
+      const perDomain = {};
+      DOMAINS.forEach(([code, , items])=>{
+        perDomain[code] = {yes:0,no:0,tot:items.length};
+      });
+      const details = [];
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref = li.dataset.ref;
+        const text = li.dataset.text;
+        const dom = li.dataset.domain;
+        const val = li.querySelector('input:checked')?.value || 'na';
+        if(val==='oui') perDomain[dom].yes++;
+        else if(val==='non') perDomain[dom].no++;
+        details.push({ref,text,domain:dom,val});
+      });
+      const yes = Object.values(perDomain).reduce((a,g)=>a+g.yes,0);
+      const no  = Object.values(perDomain).reduce((a,g)=>a+g.no,0);
+      const tot = Object.values(perDomain).reduce((a,g)=>a+g.tot,0);
+      const na  = tot - yes - no;
+      return {perDomain, details, global:{yes,no,na,total:tot}};
+    }
+
+    function updateStats(){
+      const s = computeStats();
+      document.getElementById('g-yes').textContent = s.global.yes;
+      document.getElementById('g-no').textContent  = s.global.no;
+      document.getElementById('g-na').textContent  = s.global.na;
+      const pct = Math.round((s.global.yes/s.global.total)*100);
+      document.getElementById('score').textContent = `Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
+
+      const txt = DOMAINS.map(([code, , items])=>{
+        const d = s.perDomain[code];
+        return `${code} ${d.yes}/${items.length}`;
+      }).join(' • ');
+      document.getElementById('per-domain').textContent = txt;
+    }
+
+    // ===== Rapport (HTML) =====
+    function buildReportHTML_NIS2(){
+      const s = computeStats();
+      const d = new Date().toLocaleString('fr-FR');
+      const list = (arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
+
+      let html = `<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Résultats — NIS2 (13 domaines)</title>
+<style>
+body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:#0f172a}
+h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px} h3{margin:12px 0 6px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
+table{border-collapse:collapse;width:100%;margin:8px 0}
+th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
+small{color:#64748b}
+@media print{ .noprint{display:none} }
+</style></head><body>
+<h1>Résultats — NIS2 (13 domaines ENISA)</h1>
+<div class="noprint"><small>Généré le ${d} — Imprimez cette page pour PDF</small></div>
+
+<h2>Résumé global</h2>
+<table>
+<tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr>
+<tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr>
+</table>
+
+<h2>Détail par domaine</h2>
+<table>
+<tr><th>Domaine</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
+      DOMAINS.forEach(([code,title,items])=>{
+        const dmn = s.perDomain[code];
+        html += `<tr><td>${code} — ${title}</td><td>${dmn.yes}</td><td>${dmn.no}</td><td>${items.length-dmn.yes-dmn.no}</td><td>${items.length}</td></tr>`;
+      });
+
+      html += `</table><h2>Mesures “Non” (à traiter)</h2>`;
+      DOMAINS.forEach(([code,title,items])=>{
+        const arr = list(s.details.filter(x=>x.domain===code),'non');
+        html += `<h3>${code} — ${title} <span class="badge">${arr.length}</span></h3>`;
+        if(arr.length===0) html += '<div><small>Aucune.</small></div>';
+        else{
+          html += '<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
+          arr.forEach(x=> html += `<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
+          html += '</table>';
+        }
+      });
+
+      html += `<h2>Mesures “Non répondu” (à compléter)</h2>`;
+      DOMAINS.forEach(([code,title,items])=>{
+        const arr = list(s.details.filter(x=>x.domain===code),'na');
+        html += `<h3>${code} — ${title} <span class="badge">${arr.length}</span></h3>`;
+        if(arr.length===0) html += '<div><small>Complet.</small></div>';
+        else{
+          html += '<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
+          arr.forEach(x=> html += `<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
+          html += '</table>';
+        }
+      });
+
+      html += `</body></html>`;
+      return html;
+    }
+
+    function generateReport(){
+      const html = buildReportHTML_NIS2();
+      const w = window.open('', '_blank'); w.document.write(html); w.document.close(); w.focus();
+    }
+
+    // ===== Téléchargements (rapport HTML + JSON) =====
+    function downloadFile(filename, mime, content) {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadReport_NIS2(){
+      const html = buildReportHTML_NIS2();
+      const ts = new Date().toISOString().replace(/[:.]/g,'-');
+      downloadFile(`rapport_nis2_${ts}.html`, 'text/html;charset=utf-8', html);
+    }
+
+    function downloadJSON_NIS2(){
+      const {details, global, perDomain} = computeStats();
+      const payload = {
+        framework: 'NIS2 (13 domaines ENISA)',
+        generatedAt: new Date().toISOString(),
+        global, perDomain, answers: details
+      };
+      const ts = new Date().toISOString().replace(/[:.]/g,'-');
+      downloadFile(`etat_nis2_${ts}.json`, 'application/json;charset=utf-8', JSON.stringify(payload, null, 2));
+    }
+
+    // ===== Export CSV =====
+    function exportCSV(){
+      const {details} = computeStats();
+      const rows = [['Ref','Domaine','Intitulé','Réponse']];
+      details.forEach(d=> rows.push([d.ref, d.domain, d.text, d.val]));
+      const csv = rows.map(r=> r.map(x=> `"${(x||'').replace(/"/g,'""')}"`).join(';')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'etat_nis2_13_domaines.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ===== Reset =====
+    function resetAll(){
+      if(!confirm('Supprimer toutes les réponses (Oui/Non) enregistrées ?')) return;
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref=li.dataset.ref;
+        localStorage.removeItem(LS_PREFIX+ref);
+        li.querySelectorAll('input[type="radio"]').forEach(i=> i.checked=false);
+      });
+      updateStats();
+    }
+
+    // ===== Init =====
+    (function(){
+      renderDomains();
+      updateStats();
+      document.getElementById('btn-report').addEventListener('click', generateReport);
+      document.getElementById('btn-report-dl').addEventListener('click', downloadReport_NIS2);
+      document.getElementById('btn-csv').addEventListener('click', exportCSV);
+      document.getElementById('btn-json').addEventListener('click', downloadJSON_NIS2);
+      document.getElementById('btn-reset').addEventListener('click', resetAll);
+      document.getElementById('y').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
