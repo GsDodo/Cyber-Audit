@@ -5,34 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unified Cyber Audit Pack — ISO 27001:2022 • NIST CSF 2.0 • NIS2/ENISA</title>
   <meta name="description" content="Pack d’audit cybersécurité unifié : ISO 27001:2022, NIST CSF 2.0 et NIS2/ENISA. Téléchargements, références officielles, guide d’utilisation et KPI.">
-  <link rel="icon" href="logo.png" type="image/png" />
   <style>
     :root{
-      --bg:#0b1220; --panel:#0f172a; --muted:#94a3b8; --text:#e2e8f0; --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --card:#0f172a;
+      --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8;
+      --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937;
       --shadow:0 10px 28px rgba(2,6,23,.24);
     }
+    /* Thème clair */
     [data-theme="light"]{
-      --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --muted:#475569; --text:#0f172a; --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08);
+      --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569;
+      --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb;
+      --shadow:0 8px 20px rgba(15,23,42,.08);
     }
     *{box-sizing:border-box}
     body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
     a{color:var(--brand);text-decoration:none}
     .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
     /* HERO */
-    .hero{
-      position:relative;overflow:hidden;border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,.0));
-    }
-    .hero__banner{
-      width:100%;height:240px;background:url('banner.jpg') center/cover no-repeat;filter:saturate(.95) contrast(1.05);
-    }
-    .hero__bar{
-      display:flex;gap:18px;align-items:center;justify-content:space-between;padding:14px 0 18px;
-    }
+    .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,.0));}
+    .hero__banner{width:100%;height:240px;background:url('banner.jpg') center/cover no-repeat;filter:saturate(.95) contrast(1.05);}
+    .hero__bar{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:14px 0 18px;}
     .brand{display:flex;gap:14px;align-items:center}
     .brand img{width:44px;height:44px;border-radius:10px;box-shadow:var(--shadow)}
     .brand__titles h1{margin:0;font-size:22px}
     .brand__titles p{margin:2px 0 0;color:var(--muted);font-size:14px}
+
     .actions{display:flex;gap:10px;align-items:center}
     .btn{
       border:1px solid var(--line);background:var(--panel);color:var(--text);
@@ -41,264 +39,12 @@
     }
     .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
     .btn--ghost{background:transparent}
-    .toggle{display:inline-flex;gap:8px;align-items:center}
-    .toggle input{appearance:none;width:44px;height:24px;background:var(--line);border-radius:999px;position:relative;outline:none;cursor:pointer}
-    .toggle input:before{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.25s}
-    [data-theme="dark"] .toggle input{background:#1f2937}
-    .toggle input:checked:before{left:23px}
-    /* TABS */
-    .tabs{margin:18px 0 30px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
-    .tab{
-      padding:10px 14px;border-radius:10px 10px 0 0;border:1px solid var(--line);border-bottom:0;background:var(--panel);cursor:pointer;
-      color:var(--muted);font-weight:600
+
+    /* Toggle Sombre/Clair */
+    .theme-toggle{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);
+      background:var(--panel);color:var(--text);cursor:pointer;user-select:none;
     }
-    .tab.active{color:var(--text);background:linear-gradient(180deg,rgba(91,141,239,.15),transparent)}
-    .panel{display:none;padding:22px 0}
-    .panel.active{display:block}
-    /* CARDS */
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-    .card{
-      border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);padding:16px;position:relative
+    .theme-toggle__switch{
+      width:46px;height:26px;border-radius:999px;background:var(--line);position:relative;display:inline-block;vertical-align:middle;
     }
-    .card h3{margin:0 0 8px}
-    .meta{color:var(--muted);font-size:13px}
-    .chip{display:inline-block;border-radius:999px;font-size:12px;padding:4px 10px;background:rgba(91,141,239,.12);color:var(--brand);margin-right:6px}
-    .cta{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-    .cta a{border:1px solid var(--line);padding:10px 12px;border-radius:10px;background:var(--panel);font-weight:600}
-    .cta a.primary{background:var(--brand);color:#fff;border-color:transparent}
-    .tip{position:absolute;top:10px;right:10px;font-size:12px;color:var(--muted)}
-    /* REFERENCES */
-    .refbar{display:flex;gap:10px;align-items:center;margin-bottom:12px}
-    .refbar input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);color:var(--text)}
-    .ref-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-    .ref{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
-    .ref small{color:var(--muted)}
-    /* GUIDE */
-    ol.guide{padding-left:18px}
-    ol.guide li{margin:10px 0}
-    .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--line);padding:2px 6px;border-radius:6px}
-    /* KPI */
-    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-    .kpi{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card)}
-    .kpi h4{margin:0 0 6px}
-    .kpi .val{font-size:24px;font-weight:800}
-    .kpi.ok .val{color:var(--accent)} .kpi.warn .val{color:var(--warn)} .kpi.bad .val{color:var(--danger)}
-    /* FOOTER */
-    footer{border-top:1px solid var(--line);margin-top:24px}
-    .foot{padding:14px 0;color:var(--muted);font-size:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    /* TOAST */
-    .toast{position:fixed;right:16px;bottom:16px;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);transition:.25s}
-    .toast.show{opacity:1;transform:translateY(0)}
-  </style>
-</head>
-<body>
-  <header class="hero">
-    <div class="hero__banner" aria-hidden="true"></div>
-    <div class="wrap hero__bar">
-      <div class="brand">
-        <img src="logo.png" alt="Unified Cyber Audit Pack logo" />
-        <div class="brand__titles">
-          <h1>Unified Cyber Audit Pack</h1>
-          <p>ISO 27001:2022 • NIST CSF 2.0 • NIS2 / ENISA – Livrables & tableau de bord</p>
-        </div>
-      </div>
-      <div class="actions">
-        <button id="dlAll" class="btn btn--brand" title="Télécharger tous les livrables">⬇️ Télécharger le pack</button>
-        <label class="toggle" title="Basculer clair/sombre">
-          <span>🌙</span>
-          <input id="themeSwitch" type="checkbox" />
-          <span>☀️</span>
-        </label>
-      </div>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <!-- TABS -->
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button class="tab active" data-tab="downloads" role="tab" aria-selected="true">Téléchargements</button>
-      <button class="tab" data-tab="refs" role="tab">Références</button>
-      <button class="tab" data-tab="guide" role="tab">Guide</button>
-      <button class="tab" data-tab="kpi" role="tab">KPI</button>
-    </nav>
-
-    <!-- DOWNLOADS -->
-    <section id="panel-downloads" class="panel active" role="tabpanel" aria-labelledby="downloads">
-      <div class="grid">
-        <article class="card">
-          <span class="tip">Excel</span>
-          <h3>Questionnaire & Mapping</h3>
-          <div class="meta">ISO 27001:2022 ↔ NIST CSF 2.0 ↔ NIS2/ENISA</div>
-          <div style="margin-top:6px">
-            <span class="chip">Filtres & Pivots</span>
-            <span class="chip">Catalogue + Évaluation</span>
-          </div>
-          <div class="cta">
-            <a class="primary" href="questionnaire_mapping.xlsx" data-dl>questionnaire_mapping.xlsx</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <span class="tip">Word + Excel</span>
-          <h3>SoA & Registre des risques</h3>
-          <div class="meta">Statement of Applicability (Annexe A) + Risk register</div>
-          <div class="cta">
-            <a class="primary" href="SoA_pre_rempli.docx" data-dl>SoA_pre_rempli.docx</a>
-            <a href="registre_risques.xlsx" data-dl>registre_risques.xlsx</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <span class="tip">PPTX + PDF</span>
-          <h3>Rapport d’audit</h3>
-          <div class="meta">Radar, heatmap, RACI, roadmap 12–18 mois</div>
-          <div class="cta">
-            <a class="primary" href="rapport_audit.pptx" data-dl>rapport_audit.pptx</a>
-            <a href="rapport_audit.pdf" data-dl>rapport_audit.pdf</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <span class="tip">Excel</span>
-          <h3>Dashboard KPI</h3>
-          <div class="meta">%MFA, patch P1, PRA, MTTD/MTTR, logs, fournisseurs</div>
-          <div class="cta">
-            <a class="primary" href="kpi_dashboard.xlsx" data-dl>kpi_dashboard.xlsx</a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- REFERENCES -->
-    <section id="panel-refs" class="panel" role="tabpanel" aria-labelledby="refs">
-      <div class="refbar">
-        <input id="refSearch" type="search" placeholder="Rechercher une référence (ex. NIST, ENISA, OLIR, ISO…)" />
-        <button class="btn btn--ghost" id="clearSearch">Effacer</button>
-      </div>
-      <div class="ref-list" id="refList">
-        <div class="ref" data-tags="nist csf 2.0 officiel">
-          <strong><a target="_blank" href="https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf">NIST Cybersecurity Framework 2.0 — Document officiel</a></strong><br/>
-          <small>Publication : 26 fév. 2024 (NIST)</small>
-        </div>
-        <div class="ref" data-tags="nist olir mapping informative references iso">
-          <strong><a target="_blank" href="https://csrc.nist.gov/projects/olir/informative-reference-catalog">NIST OLIR — Informative References & mappings</a></strong><br/>
-          <small>Catalogue de mappings vers d’autres normes</small>
-        </div>
-        <div class="ref" data-tags="enisa nis2 guidance mesures preuves">
-          <strong><a target="_blank" href="https://www.enisa.europa.eu/publications/nis2-technical-implementation-guidance">ENISA — NIS2 Technical Implementation Guidance</a></strong><br/>
-          <small>Mesures techniques, exemples de preuves & mappings</small>
-        </div>
-        <div class="ref" data-tags="iso 27001 2022 annexe a explications">
-          <strong><a target="_blank" href="https://www.isms.online/iso-27001/annex-a-2022/">ISO 27001:2022 — Annexe A (explications)</a></strong><br/>
-          <small>Guide pédagogique sur l’Annexe A 2022</small>
-        </div>
-      </div>
-    </section>
-
-    <!-- GUIDE -->
-    <section id="panel-guide" class="panel" role="tabpanel" aria-labelledby="guide">
-      <ol class="guide">
-        <li><strong>Questionnaire & Mapping</strong> : ouvrez <span class="kbd">questionnaire_mapping.xlsx</span> → onglet <span class="kbd">Catalogue</span>, complétez <span class="kbd">Évaluation</span>, puis générez vos TCD/graphes depuis <span class="kbd">Pivot_source</span>.</li>
-        <li><strong>SoA</strong> : renseignez l’applicabilité des contrôles de l’Annexe A et le statut d’implémentation ; rattachez les <em>preuves</em>.</li>
-        <li><strong>Rapport</strong> : importez les scores (radar), positionnez vos écarts (heatmap), consolidez la <em>roadmap 12–18 mois</em> et la <em>matrice RACI</em>.</li>
-        <li><strong>KPI</strong> : mettez à jour <span class="kbd">kpi_dashboard.xlsx</span> (onglet <span class="kbd">KPI</span>) et alignez avec vos cibles (<span class="kbd">Cibles</span>).</li>
-        <li><strong>Publication</strong> : activez GitHub Pages (Settings → Pages → Branch <span class="kbd">main</span>, dossier <span class="kbd">/ (root)</span>), puis partagez l’URL publique.</li>
-      </ol>
-      <p style="color:var(--muted);font-size:14px">Astuce : ajoutez votre logo/bannière aux fichiers pour un rendu 100% brandé.</p>
-    </section>
-
-    <!-- KPI (exemple visuel côté page) -->
-    <section id="panel-kpi" class="panel" role="tabpanel" aria-labelledby="kpi">
-      <div class="kpi-grid" id="kpiGrid">
-        <!-- Ces valeurs sont illustratives ; vous pouvez les ajuster par JS ou en les liant à une API interne si besoin -->
-        <div class="kpi ok"><h4>% MFA global</h4><div class="val" data-val="92">92%</div><small>Cible ≥ 95%</small></div>
-        <div class="kpi warn"><h4>Délai patch P1</h4><div class="val" data-val="9">9 j</div><small>Cible ≤ 7 j</small></div>
-        <div class="kpi ok"><h4>Taux succès PRA</h4><div class="val" data-val="96">96%</div><small>Cible ≥ 95%</small></div>
-        <div class="kpi bad"><h4>MTTD</h4><div class="val" data-val="24">24 h</div><small>Cible ≤ 12 h</small></div>
-        <div class="kpi warn"><h4>MTTR</h4><div class="val" data-val="10">10 h</div><small>Cible ≤ 8 h</small></div>
-        <div class="kpi warn"><h4>Couverture logs</h4><div class="val" data-val="82">82%</div><small>Cible ≥ 90%</small></div>
-        <div class="kpi warn"><h4>Fournisseurs évalués</h4><div class="val" data-val="65">65%</div><small>Cible ≥ 80%</small></div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap foot">
-      <div>© <span id="y"></span> Unified Cyber Audit Pack • v<span id="ver">2026.02</span></div>
-      <div>Mode <strong id="modeLabel">Clair</strong> • <a href="https://github.com/" target="_blank" rel="noopener">GitHub Pages</a></div>
-    </div>
-  </footer>
-
-  <div id="toast" class="toast" role="status" aria-live="polite">Téléchargement lancé…</div>
-
-  <script>
-    // --- THEME ---
-    const root = document.documentElement;
-    const sw = document.getElementById('themeSwitch');
-    const modeLabel = document.getElementById('modeLabel');
-    const pref = localStorage.getItem('ucap-theme');
-    const applyTheme = (t) => {
-      document.documentElement.setAttribute('data-theme', t);
-      modeLabel.textContent = t === 'dark' ? 'Sombre' : 'Clair';
-      sw.checked = (t === 'light') ? false : true;
-      localStorage.setItem('ucap-theme', t);
-    }
-    if(pref){ applyTheme(pref); } else {
-      const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(sysDark ? 'dark' : 'light');
-    }
-    sw.addEventListener('change', () => applyTheme(sw.checked ? 'dark' : 'light'));
-
-    // --- TABS ---
-    const tabs = [...document.querySelectorAll('.tab')];
-    const panels = [...document.querySelectorAll('.panel')];
-    const showPanel = (id) => {
-      tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===id));
-      panels.forEach(p=>p.classList.toggle('active', p.id === 'panel-'+id));
-      history.replaceState(null, '', '#'+id);
-    }
-    tabs.forEach(t => t.addEventListener('click', ()=> showPanel(t.dataset.tab)));
-    // deep link support
-    const hash = location.hash.replace('#','');
-    if(hash){ const t = tabs.find(x=>x.dataset.tab===hash); if(t) showPanel(hash); }
-
-    // --- DOWNLOAD TOAST ---
-    const toast = document.getElementById('toast');
-    const showToast = (msg='Téléchargement lancé…')=>{
-      toast.textContent = msg; toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'), 1800);
-   st('Téléchargement des livrables…');
-    });
-
-    // --- REFS FILTER ---
-    const q = document.getElementById('refSearch');
-    const clearBtn = document.getElementById('clearSearch');
-    const items = [...document.querySelectorAll('#refList .ref')];
-    const filter = () => {
-      const s = q.value.trim().toLowerCase();
-      items.forEach(it=>{
-        const text = (it.textContent + ' ' + (it.dataset.tags||'')).toLowerCase();
-        it.style.display = text.includes(s) ? '' : 'none';
-      });
-    }
-    q.addEventListener('input', filter);
-    clearBtn.addEventListener('click', ()=>{ q.value=''; filter(); q.focus(); });
-
-    // --- KPI COLOR (auto-classes ok/warn/bad en fonction des cibles affichées) ---
-    document.querySelectorAll('.kpi').forEach(k=>{
-      // Heuristique : on lit la ligne "Cible …"
-      const tgtTxt = k.querySelector('small')?.textContent || '';
-      const valEl = k.querySelector('.val');
-      const val = parseFloat((valEl.dataset.val||'0').toString().replace(',','.'));
-      let ok=true;
-      if(tgtTxt.includes('≥')) { ok = val >= parseFloat(tgtTxt.replace(/[^0-9\\.]/g,'')); }
-      if(tgtTxt.includes('≤')) { ok = val <= parseFloat(tgtTxt.replace(/[^0-9\\.]/g,'')); }
-      k.classList.remove('ok','warn','bad');
-      k.classList.add(ok ? 'ok' : (tgtTxt.includes('≥') ? (val>=0.8*parseFloat(tgtTxt.replace(/[^0-9\\.]/g,''))?'warn':'bad')
-                                                      : (val<=1.25*parseFloat(tgtTxt.replace(/[^0-9\\.]/g,''))?'warn':'bad')));
-    });
-
-    document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
-</body>
-</html>
