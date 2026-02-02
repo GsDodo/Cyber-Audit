@@ -1,0 +1,91 @@
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solution d'audit cybersécurité – ISO 27001:2022, NIST CSF 2.0 & NIS2/ENISA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+  
+    *{{box-sizing:border-box}}
+    body{{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.6;margin:0;color:#0f172a;background:#ffffff}}
+    header{{padding:32px 20px;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff}}
+    header h1{{margin:0;font-size:28px}}
+    header p{{margin:8px 0 0 0;opacity:.95}}
+    main{{padding:24px 20px;max-width:1100px;margin:0 auto}}
+    section{{margin:28px 0;padding:20px;border:1px solid #e5e7eb;border-radius:12px}}
+    h2{{margin-top:0}}
+    .grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}}
+    .card{{border:1px solid #e5e7eb;padding:16px;border-radius:12px}}
+    a.btn{{display:inline-block;margin-top:8px;padding:10px 14px;border-radius:10px;background:#0ea5e9;color:#fff;text-decoration:none;font-weight:600}}
+    a.btn.secondary{{background:#10b981}}
+    a.btn.ghost{{background:#111827;color:#fff}}
+    footer{{padding:18px 20px;color:#475569;border-top:1px solid #e5e7eb}}
+    code, .mono{{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}}
+    ul.inline li{{margin-bottom:6px}}
+    .source a{{color:#334155}}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Solution d'audit cybersécurité</h1>
+    <p>ISO/IEC 27001:2022 (Annexe A) • NIST CSF 2.0 • NIS2 / ENISA – Pack de livrables & tableau de bord</p>
+  </header>
+  <main>
+    <section>
+      <h2>🎯 Téléchargements</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Questionnaire d’audit & mapping</h3>
+          <p>Excel avec filtres & pivots, mappé ISO 27001:2022 ↔ NIST CSF 2.0 ↔ NIS2/ENISA.</p>
+          <a class="btn" href="questionnaire_mapping.xlsx">Télécharger (XLSX)</a>
+        </div>
+        <div class="card">
+          <h3>SoA & Registre des risques</h3>
+          <p>Statement of Applicability pré‑rempli (modèle) + structure de registre des risques.</p>
+          <a class="btn" href="SoA_pre_rempli.docx">SoA (DOCX)</a>
+          <a class="btn secondary" href="registre_risques.xlsx">Registre des risques (XLSX)</a>
+        </div>
+        <div class="card">
+          <h3>Rapport d’audit</h3>
+          <p>Slides avec radar ISO vs NIST, heatmap des écarts, matrice RACI et roadmap 12–18 mois.</p>
+          <a class="btn" href="rapport_audit.pptx">PowerPoint (PPTX)</a>
+          <a class="btn secondary" href="rapport_audit.pdf">Version PDF</a>
+        </div>
+        <div class="card">
+          <h3>KPI & métriques</h3>
+          <p>Tableau de bord (XLSX) : % MFA, délai de patch P1, succès PRA, MTTD/MTTR, couverture logs, % fournisseurs évalués.</p>
+          <a class="btn" href="kpi_dashboard.xlsx">Télécharger (XLSX)</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>📚 Références</h2>
+      <ul class="inline">
+        <li class="source"><a href="https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf" target="_blank">NIST Cybersecurity Framework 2.0 (Document officiel)</a></li>
+        <li class="source"><a href="https://csrc.nist.gov/projects/olir/informative-reference-catalog" target="_blank">NIST OLIR – Informative References & mappings</a></li>
+        <li class="source"><a href="https://www.enisa.europa.eu/publications/nis2-technical-implementation-guidance" target="_blank">ENISA – NIS2 Technical Implementation Guidance</a></li>
+        <li class="source"><a href="https://www.isms.online/iso-27001/annex-a-2022/" target="_blank">ISO 27001:2022 – Annexe A (explications)</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>ℹ️ Notes d’utilisation</h2>
+      <ol>
+        <li>Ouvrez le <strong>Questionnaire</strong>, filtrez par référentiel (onglet <span class="mono">Config</span>) et remplissez l’onglet <span class="mono">Évaluation</span>.</li>
+        <li>Complétez le <strong>SoA</strong> et rattachez les preuves. En parallèle, tenez à jour le <strong>registre des risques</strong>.</li>
+        <li>Les visuels du <strong>rapport</strong> se mettent à jour après import des scores (exports depuis Excel).</li>
+        <li>Renseignez vos <strong>KPI</strong> dans le tableau de bord (ou connectez vos exports d’outils sécurité).</li>
+      </ol>
+      <p class="mono">Généré le 2026-02-02 08:55</p>
+    </section>
+  </main>
+  <footer>
+    Prêt pour hébergement GitHub Pages : placez ce fichier à la racine du dépôt.
+  </footer>
+</body>
+</html>
