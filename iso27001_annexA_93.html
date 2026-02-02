@@ -1,36 +1,39 @@
+
 <!doctype html>
 <html lang="fr" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ISO/IEC 27001:2022 — Annexe A : 93 contrôles (Oui/Non + Rapport)</title>
-  <meta name="description" content="Liste interactive des 93 contrôles ISO/IEC 27001:2022 (Annexe A), cases Oui/Non, enregistrement local, rapport d’audit et export CSV.">
+  <title>ISO/IEC 27001:2022 – Annexe A : 93 contrôles par catégorie</title>
+  <meta name="description" content="Liste interactive des 93 contrôles ISO/IEC 27001:2022 (Annexe A) classés par catégorie : Organisationnel, Humain, Physique, Technologique. Recherche, ancres, clair/sombre.">
   <style>
     :root{
       --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8;
-      --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24);
+      --brand:#5b8def; --accent:#22c55e; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24);
     }
     [data-theme="light"]{
       --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569;
-      --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08);
+      --brand:#3b82f6; --accent:#059669; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08);
     }
     *{box-sizing:border-box}
     body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
     a{color:var(--brand);text-decoration:none}
     .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
-
     header{border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,0))}
     .bar{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:16px 0}
     h1{margin:0;font-size:22px}
-    .muted{color:var(--muted);font-size:13px;margin:4px 0 0 0}
+    .muted{color:var(--muted);font-size:14px;margin:4px 0 0 0}
+    .theme-toggle{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);
+      background:var(--panel);color:var(--text);cursor:pointer;user-select:none;
+    }
+    .switch{width:46px;height:26px;border-radius:999px;background:var(--line);position:relative;display:inline-block}
+    .switch::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s}
+    [data-theme="dark"] .switch{background:#1f2937}
+    [data-theme="dark"] .switch::after{left:23px}
 
-    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
-    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;box-shadow:var(--shadow);font-weight:600}
-    .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
-    .stat{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--panel);font-size:13px;color:var(--muted)}
-    .stat b{color:var(--text)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
-    .info{font-size:12px;color:var(--muted)}
+    .tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
+    input[type="search"]{flex:1;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);padding:10px 12px}
 
     .group{border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);margin:16px 0}
     .group header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
@@ -40,233 +43,238 @@
     .controls details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}
     .controls summary{cursor:pointer;padding:10px 12px;font-weight:600}
     .controls ol{margin:6px 0 14px 28px}
-    .controls li{margin:6px 0;display:flex;align-items:flex-start;gap:10px}
-    .ref{min-width:64px;color:var(--muted);font-weight:700}
-    .label{flex:1}
-
-    /* Toggle Oui/Non compact */
-    .yn{display:inline-flex;gap:10px;align-items:center;margin-left:auto}
-    .yn label{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
-    .yn input{accent-color:var(--brand);}
-
+    .controls li{margin:3px 0}
+    .meta{color:var(--muted);font-size:13px;padding:0 16px 12px}
     footer{border-top:1px solid var(--line);margin-top:24px}
     .foot{padding:12px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
-
-    /* Impression (rapport) */
-    @media print {
-      .toolbar{display:none}
-      details{open:true}
-    }
+    nav.anchors{display:flex;gap:10px;flex-wrap:wrap}
+    nav.anchors a{border:1px solid var(--line);padding:8px 10px;border-radius:10px;background:var(--panel);font-weight:600}
+    .cite{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap bar">
       <div>
-        <h1>ISO/IEC 27001:2022 – Annexe A : 93 contrôles (évaluation Oui/Non)</h1>
-        <p class="muted">Titres non officiels/paraphrasés pour usage pédagogique. Les réponses sont enregistrées dans votre navigateur (localStorage).</p>
+        <h1>ISO/IEC 27001:2022 – Annexe A : 93 contrôles</h1>
+        <p class="muted">Liste interactive par catégories (Organisationnel, Humain, Physique, Technologique). Titres non officiels/paraphrasés pour usage pédagogique.</p>
       </div>
-      <div class="grid" style="max-width:520px">
-        <span class="stat">Global : <b id="g-yes">0</b> Oui • <b id="g-no">0</b> Non • <b id="g-na">93</b> Non répondu</span>
-        <span class="stat">Org <b id="o-yes">0</b>/<b>37</b> • People <b id="p-yes">0</b>/<b>8</b> • Phys <b id="ph-yes">0</b>/<b>14</b> • Tech <b id="t-yes">0</b>/<b>34</b></span>
-      </div>
+      <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Basculer mode sombre/clair" title="Basculer mode sombre/clair">
+        <span aria-hidden="true">🌙</span><span class="switch" aria-hidden="true"></span><span aria-hidden="true">☀️</span>
+      </button>
     </div>
   </header>
 
   <main class="wrap">
-    <div class="toolbar">
-      <button id="btn-report" class="btn btn--brand">🧾 Générer le rapport</button>
-      <button id="btn-csv" class="btn">⬇️ Exporter CSV</button>
-      <button id="btn-reset" class="btn">♻️ Réinitialiser</button>
-      <span class="info">Conseil : répondez à tout (Oui/Non), vous pourrez compléter les preuves dans votre rapport principal.</span>
+    <div class="tools">
+      <nav class="anchors" aria-label="Accès rapide">
+        <a href="#org">Organisationnel (37)</a>
+        <a href="#people">Humain (8)</a>
+        <a href="#physical">Physique (14)</a>
+        <a href="#tech">Technologique (34)</a>
+      </nav>
+      <input id="q" type="search" placeholder="Rechercher un contrôle (ex. accès, cloud, incident…)" aria-label="Rechercher un contrôle">
     </div>
 
-    <!-- ====== ORGANISATIONNEL ====== -->
+    <!-- ORGANISATIONNEL -->
     <section id="org" class="group">
       <header>
         <h2>Contrôles organisationnels <span class="tag">37</span></h2>
+        <span class="cite">Répartition & intitulés : ISMS.online ; Hightable ; Advisera (93/4 catégories). (a-2022/)[3](https://hightable.io/iso-27001-annex-a-controls-reference-guide/)[4](https://advisera.com/iso27001/annex-a-controls/))</span>
       </header>
       <div class="controls" data-group="org">
-        <details open data-default-open><summary>Gouvernance & politique</summary>
-          <ol>
-            <li><span class="ref">5.1</span><span class="label">Politiques de sécurité de l’information</span></li>
-            <li><span class="ref">5.2</span><span class="label">Rôles et responsabilités SSI</span></li>
-            <li><span class="ref">5.3</span><span class="label">Ségrégation des tâches</span></li>
-            <li><span class="ref">5.4</span><span class="label">Responsabilités de la direction</span></li>
-            <li><span class="ref">5.5</span><span class="label">Contacts avec les autorités</span></li>
-            <li><span class="ref">5.6</span><span class="label">Contacts avec les groupes d’intérêt</span></li>
-            <li><span class="ref">5.7</span><span class="label">Renseignement sur les menaces</span></li>
-            <li><span class="ref">5.8</span><span class="label">SSI dans la gestion de projet</span></li>
+        <details open><summary>Gouvernance & politique</summary>
+          <ol start="1">
+            <li>5.1 Politiques de sécurité de l’information</li>
+            <li>5.2 Rôles et responsabilités SSI</li>
+            <li>5.3 Ségrégation des tâches</li>
+            <li>5.4 Responsabilités du management</li>
+            <li>5.5 Contacts avec les autorités</li>
+            <li>5.6 Contacts avec les groupes d’intérêt</li>
+            <li>5.7 Renseignement sur les menaces (Threat intelligence)</li>
+            <li>5.8 SSI dans la gestion de projet</li>
           </ol>
         </details>
-        <details><summary>Gestion des actifs & informations</summary>
+        <details><summary>Gestion des actifs & des informations</summary>
           <ol start="9">
-            <li><span class="ref">5.9</span><span class="label">Inventaire des informations et actifs associés</span></li>
-            <li><span class="ref">5.10</span><span class="label">Usage acceptable de l’information et des actifs</span></li>
-            <li><span class="ref">5.11</span><span class="label">Restitution des actifs</span></li>
-            <li><span class="ref">5.12</span><span class="label">Classification de l’information</span></li>
-            <li><span class="ref">5.13</span><span class="label">Étiquetage de l’information</span></li>
-            <li><span class="ref">5.14</span><span class="label">Transfert d’informations</span></li>
+            <li>5.9 Inventaire des informations et actifs associés</li>
+            <li>5.10 Usage acceptable des informations et actifs</li>
+            <li>5.11 Restitution des actifs</li>
+            <li>5.12 Classification de l’information</li>
+            <li>5.13 Étiquetage de l’information</li>
+            <li>5.14 Transfert d’informations</li>
           </ol>
         </details>
         <details><summary>Accès & identités (cadre orga)</summary>
           <ol start="15">
-            <li><span class="ref">5.15</span><span class="label">Contrôle d’accès (principes)</span></li>
-            <li><span class="ref">5.16</span><span class="label">Gestion des identités</span></li>
-            <li><span class="ref">5.17</span><span class="label">Informations d’authentification</span></li>
-            <li><span class="ref">5.18</span><span class="label">Droits d’accès</span></li>
+            <li>5.15 Contrôle d’accès (principes)</li>
+            <li>5.16 Gestion des identités</li>
+            <li>5.17 Informations d’authentification</li>
+            <li>5.18 Droits d’accès</li>
           </ol>
         </details>
         <details><summary>Fournisseurs & chaîne d’approvisionnement</summary>
           <ol start="19">
-            <li><span class="ref">5.19</span><span class="label">SSI dans les relations fournisseurs</span></li>
-            <li><span class="ref">5.20</span><span class="label">SSI dans les contrats fournisseurs</span></li>
-            <li><span class="ref">5.21</span><span class="label">SSI dans la chaîne d’approvisionnement TIC</span></li>
-            <li><span class="ref">5.22</span><span class="label">Suivi/revue/changements des services fournisseurs</span></li>
-            <li><span class="ref">5.23</span><span class="label">SSI pour l’usage des services cloud</span></li>
+            <li>5.19 SSI dans les relations fournisseurs</li>
+            <li>5.20 SSI dans les contrats fournisseurs</li>
+            <li>5.21 Gestion de la SSI dans la chaîne d’approvisionnement TIC</li>
+            <li>5.22 Suivi, revue & changements des services fournisseurs</li>
+            <li>5.23 SSI pour l’usage des services cloud</li>
           </ol>
         </details>
-        <details><summary>Incidents & continuité</summary>
+        <details><summary>Gestion des incidents & continuité</summary>
           <ol start="24">
-            <li><span class="ref">5.24</span><span class="label">Planification & préparation (gestion des incidents)</span></li>
-            <li><span class="ref">5.25</span><span class="label">Évaluation & décision sur les événements</span></li>
-            <li><span class="ref">5.26</span><span class="label">Réponse aux incidents</span></li>
-            <li><span class="ref">5.27</span><span class="label">Retour d’expérience (post‑incident)</span></li>
-            <li><span class="ref">5.28</span><span class="label">Collecte de preuves</span></li>
-            <li><span class="ref">5.29</span><span class="label">SSI lors des perturbations</span></li>
-            <li><span class="ref">5.30</span><span class="label">Préparation TIC à la continuité d’activité</span></li>
+            <li>5.24 Planification et préparation à la gestion des incidents</li>
+            <li>5.25 Évaluation et décision sur les événements SSI</li>
+            <li>5.26 Réponse aux incidents de SSI</li>
+            <li>5.27 Retour d’expérience (apprentissage) après incident</li>
+            <li>5.28 Collecte de preuves</li>
+            <li>5.29 SSI en cas de perturbation</li>
+            <li>5.30 Préparation TIC à la continuité d’activité (ICT readiness)</li>
           </ol>
         </details>
-        <details><summary>Conformité & exigences</summary>
+        <details><summary>Conformité & exigences légales</summary>
           <ol start="31">
-            <li><span class="ref">5.31</span><span class="label">Exigences légales/réglementaires/contractuelles</span></li>
-            <li><span class="ref">5.32</span><span class="label">Propriété intellectuelle</span></li>
-            <li><span class="ref">5.33</span><span class="label">Protection des enregistrements</span></li>
-            <li><span class="ref">5.34</span><span class="label">Vie privée & PII</span></li>
-            <li><span class="ref">5.35</span><span class="label">Revue indépendante de la SSI</span></li>
-            <li><span class="ref">5.36</span><span class="label">Conformité aux politiques/règles/standards</span></li>
-            <li><span class="ref">5.37</span><span class="label">Procédures opératoires documentées</span></li>
+            <li>5.31 Exigences légales, réglementaires et contractuelles</li>
+            <li>5.32 Droits de propriété intellectuelle</li>
+            <li>5.33 Protection des enregistrements</li>
+            <li>5.34 Vie privée & protection des PII</li>
+            <li>5.35 Revue indépendante de la SSI</li>
+            <li>5.36 Conformité aux politiques/règles/normes SSI</li>
+            <li>5.37 Procédures opératoires documentées</li>
           </ol>
         </details>
       </div>
+      <p class="meta">Structure 5.x et contenus synthétisés depuis les récapitulatifs publics listant les 93 contrôles ; voir notamment Hightable (liste complète) et Advisera/ISMS.online (vue par catégories). ([3](https://hightable.io/iso-27001-annex-a-controls-reference-guide/)[4](https://advisera.com/iso27001/annex-a-controls/)[2](https://www.isms.online/iso-27001/annex-a-2022/))</p>
     </section>
 
-    <!-- ====== PERSONNES ====== -->
+    <!-- HUMAIN -->
     <section id="people" class="group">
       <header>
-        <h2>Contrôles liés aux personnes <span class="tag">8</span></h2>
+        <h2>Contrôles humains <span class="tag">8</span></h2>
+        <span class="cite">Répartition & intitulés : ISMS.online / Advisera / Hightable. ([2](https://www.isms.online/iso-27001/annex-a-2022/)[4](https://advisera.com/iso27001/annex-a-controls/)[3](https://hightable.io/iso-27001-annex-a-controls-reference-guide/))</span>
       </header>
       <div class="controls" data-group="people">
-        <details open data-default-open><summary>Ressources humaines & sensibilisation</summary>
-          <ol>
-            <li><span class="ref">6.1</span><span class="label">Vérifications pré‑emploi (screening)</span></li>
-            <li><span class="ref">6.2</span><span class="label">Conditions d’emploi</span></li>
-            <li><span class="ref">6.3</span><span class="label">Sensibilisation / éducation / formation SSI</span></li>
-            <li><span class="ref">6.4</span><span class="label">Processus disciplinaire</span></li>
-            <li><span class="ref">6.5</span><span class="label">Responsabilités après départ/changement</span></li>
-            <li><span class="ref">6.6</span><span class="label">Confidentialité (NDA)</span></li>
-            <li><span class="ref">6.7</span><span class="label">Travail à distance</span></li>
-            <li><span class="ref">6.8</span><span class="label">Signalement des événements SSI</span></li>
+        <details open><summary>Ressources humaines & sensibilisation</summary>
+          <ol start="1">
+            <li>6.1 Vérifications pré‑emploi (screening)</li>
+            <li>6.2 Conditions d’emploi</li>
+            <li>6.3 Sensibilisation, éducation & formation SSI</li>
+            <li>6.4 Processus disciplinaire</li>
+            <li>6.5 Responsabilités après départ/changement</li>
+            <li>6.6 Confidentialité / NDA</li>
+            <li>6.7 Travail à distance / télétravail</li>
+            <li>6.8 Signalement des événements SSI</li>
           </ol>
         </details>
       </div>
+      <p class="meta">Les 8 contrôles “People” couvrent le cycle RH, la sensibilisation et le signalement d’événements. ([4](https://advisera.com/iso27001/annex-a-controls/))</p>
     </section>
 
-    <!-- ====== PHYSIQUE ====== -->
+    <!-- PHYSIQUE -->
     <section id="physical" class="group">
       <header>
         <h2>Contrôles physiques <span class="tag">14</span></h2>
+        <span class="cite">Répartition & intitulés : ISMS.online / Hightable / PDF récapitulatif (Consultants Like Us). ([2](https://www.isms.online/iso-27001/annex-a-2022/)[3](https://hightable.io/iso-27001-annex-a-controls-reference-guide/)[1](https://consultantslikeus.co.uk/wp-content/uploads/2025/04/93-annex-a-controls-pdf.pdf))</span>
       </header>
       <div class="controls" data-group="physical">
-        <details open data-default-open><summary>Sites, accès & environnements</summary>
-          <ol>
-            <li><span class="ref">7.1</span><span class="label">Périmètres de sécurité physique</span></li>
-            <li><span class="ref">7.2</span><span class="label">Contrôles d’accès physique</span></li>
-            <li><span class="ref">7.3</span><span class="label">Sécurisation des bureaux / salles / locaux</span></li>
-            <li><span class="ref">7.4</span><span class="label">Surveillance de la sécurité physique</span></li>
-            <li><span class="ref">7.5</span><span class="label">Menaces physiques & environnementales</span></li>
-            <li><span class="ref">7.6</span><span class="label">Travail en zones sécurisées</span></li>
-            <li><span class="ref">7.7</span><span class="label">Bureau clair / écran clair</span></li>
-            <li><span class="ref">7.8</span><span class="label">Emplacement & protection des équipements</span></li>
-            <li><span class="ref">7.9</span><span class="label">Sécurité des actifs hors site</span></li>
-            <li><span class="ref">7.10</span><span class="label">Supports de stockage</span></li>
-            <li><span class="ref">7.11</span><span class="label">Services utilitaires</span></li>
-            <li><span class="ref">7.12</span><span class="label">Sécurité du câblage</span></li>
-            <li><span class="ref">7.13</span><span class="label">Maintenance des équipements</span></li>
-            <li><span class="ref">7.14</span><span class="label">Élimination / réutilisation sécurisée des équipements</span></li>
+        <details open><summary>Sites, accès & environnements</summary>
+          <ol start="1">
+            <li>7.1 Périmètres de sécurité physique</li>
+            <li>7.2 Contrôles d’accès physique</li>
+            <li>7.3 Sécurisation des bureaux, salles et locaux</li>
+            <li>7.4 Surveillance de la sécurité physique</li>
+            <li>7.5 Protection contre menaces physiques & environnementales</li>
+            <li>7.6 Travail en zones sécurisées</li>
+            <li>7.7 Politique bureau clair / écran clair</li>
+            <li>7.8 Emplacement & protection des équipements</li>
+            <li>7.9 Sécurité des actifs hors site</li>
+            <li>7.10 Supports de stockage</li>
+            <li>7.11 Services utilitaires (énergie, clim, etc.)</li>
+            <li>7.12 Sécurité du câblage</li>
+            <li>7.13 Maintenance des équipements</li>
+            <li>7.14 Élimination / réutilisation sécurisée des équipements</li>
           </ol>
         </details>
       </div>
+      <p class="meta">Introduit en 2022 : surveillance de la sécurité physique (7.4) parmi les nouveaux contrôles. ([5](https://secureframe.com/hub/iso-27001/controls))</p>
     </section>
 
-    <!-- ====== TECHNOLOGIQUE ====== -->
+    <!-- TECHNOLOGIQUE -->
     <section id="tech" class="group">
       <header>
         <h2>Contrôles technologiques <span class="tag">34</span></h2>
+        <span class="cite">Répartition & intitulés : ISMS.online / Hightable / Advisera (dont 11 nouveaux en 2022 comme config, DLP, web filtering...). ([2](https://www.isms.online/iso-27001/annex-a-2022/)[3](https://hightable.io/iso-27001-annex-a-controls-reference-guide/)[5](https://secureframe.com/hub/iso-27001/controls))</span>
       </header>
       <div class="controls" data-group="tech">
-        <details open data-default-open><summary>Postes, données & réseau</summary>
-          <ol>
-            <li><span class="ref">8.1</span><span class="label">Dispositifs utilisateur</span></li>
-            <li><span class="ref">8.2</span><span class="label">Sécurité des données en transmission</span></li>
-            <li><span class="ref">8.3</span><span class="label">Filtrage du trafic réseau</span></li>
-            <li><span class="ref">8.4</span><span class="label">Services réseau sécurisés</span></li>
-            <li><span class="ref">8.5</span><span class="label">Sécurité des plateformes & environnements</span></li>
-            <li><span class="ref">8.6</span><span class="label">Capacité & performance</span></li>
-            <li><span class="ref">8.7</span><span class="label">Protection antimalware</span></li>
-            <li><span class="ref">8.8</span><span class="label">Gestion des vulnérabilités techniques</span></li>
-            <li><span class="ref">8.9</span><span class="label">Gestion de la configuration</span></li>
-            <li><span class="ref">8.10</span><span class="label">Suppression des informations</span></li>
-            <li><span class="ref">8.11</span><span class="label">Masquage des données</span></li>
-            <li><span class="ref">8.12</span><span class="label">Prévention de fuites de données (DLP)</span></li>
+        <details open><summary>Postes & protection des données</summary>
+          <ol start="1">
+            <li>8.1 Dispositifs utilisateur (end‑points)</li>
+            <li>8.2 Sécurité des données au repos/en transit (données en général)</li>
+            <li>8.3 Cryptographie (utilisation)</li>
+            <li>8.4 Gestion des clés</li>
+            <li>8.5 Sécurité réseau (principes)</li>
+            <li>8.6 Segmentation réseau</li>
+            <li>8.7 Sécurité des services réseau</li>
+            <li>8.8 Filtrage du trafic réseau</li>
+            <li>8.9 Gestion de la configuration</li>
+            <li>8.10 Suppression des données (information deletion)</li>
+            <li>8.11 Masquage des données</li>
+            <li>8.12 Prévention de fuites de données (DLP)</li>
           </ol>
         </details>
-        <details><summary>Journalisation, surveillance & sauvegardes</summary>
+        <details><summary>Journalisation, surveillance & vulnérabilités</summary>
           <ol start="13">
-            <li><span class="ref">8.13</span><span class="label">Sauvegardes</span></li>
-            <li><span class="ref">8.14</span><span class="label">Journalisation</span></li>
-            <li><span class="ref">8.15</span><span class="label">Synchronisation de l’horloge</span></li>
-            <li><span class="ref">8.16</span><span class="label">Activités de surveillance</span></li>
-            <li><span class="ref">8.17</span><span class="label">Détection de logiciels malveillants</span></li>
-            <li><span class="ref">8.18</span><span class="label">Gestion des vulnérabilités (tech)</span></li>
+            <li>8.13 Sauvegardes</li>
+            <li>8.14 Journalisation (logging)</li>
+            <li>8.15 Synchronisation de l’horloge</li>
+            <li>8.16 Activités de surveillance (monitoring)</li>
+            <li>8.17 Détection de malware</li>
+            <li>8.18 Gestion des vulnérabilités techniques</li>
           </ol>
         </details>
-        <details><summary>Accès techniques & environnements</summary>
+        <details><summary>Contrôles d’accès techniques</summary>
           <ol start="19">
-            <li><span class="ref">8.19</span><span class="label">Authentification sécurisée</span></li>
-            <li><span class="ref">8.20</span><span class="label">Gestion des infos d’authentification</span></li>
-            <li><span class="ref">8.21</span><span class="label">Restrictions sur utilitaires systèmes</span></li>
-            <li><span class="ref">8.22</span><span class="label">Sécurité des environnements de dev</span></li>
-            <li><span class="ref">8.23</span><span class="label">Filtrage Web</span></li>
-            <li><span class="ref">8.24</span><span class="label">Code mobile / macros</span></li>
+            <li>8.19 Authentification sécurisée</li>
+            <li>8.20 Gestion des informations d’authentification (stockage, complexité…)</li>
+            <li>8.21 Restrictions sur utilitaires & outils système</li>
+            <li>8.22 Sécurité des environnements de développement</li>
+            <li>8.23 Filtrage web</li>
+            <li>8.24 Mobile code / macros</li>
           </ol>
         </details>
-        <details><summary>Cycle de vie & applicatif</summary>
+        <details><summary>Cycle de vie & sécurité applicative</summary>
           <ol start="25">
-            <li><span class="ref">8.25</span><span class="label">Vulnérabilités applicatives</span></li>
-            <li><span class="ref">8.26</span><span class="label">Sécurité du développement (SDLC)</span></li>
-            <li><span class="ref">8.27</span><span class="label">Tests de sécurité applicative</span></li>
-            <li><span class="ref">8.28</span><span class="label">Codage sécurisé</span></li>
+            <li>8.25 Gestion des vulnérabilités applicatives</li>
+            <li>8.26 Sécurité du développement applicatif (SDLC)</li>
+            <li>8.27 Tests de sécurité applicative</li>
+            <li>8.28 Codage sécurisé</li>
           </ol>
         </details>
-        <details><summary>Services & opérations</summary>
+        <details><summary>Services cloud & opérations</summary>
           <ol start="29">
-            <li><span class="ref">8.29</span><span class="label">Services infogérés/externes — sécurité</span></li>
-            <li><span class="ref">8.30</span><span class="label">Contrôle des déploiements & changements</span></li>
-            <li><span class="ref">8.31</span><span class="label">Sécurité des API & interfaces</span></li>
-            <li><span class="ref">8.32</span><span class="label">Durcissement plateformes/systèmes</span></li>
-            <li><span class="ref">8.33</span><span class="label">Résilience & capacité (tech)</span></li>
-            <li><span class="ref">8.34</span><span class="label">Protection anti‑DoS</span></li>
+            <li>8.29 Sécurité des services infogérés/externes</li>
+            <li>8.30 Contrôles de déploiement/changes (DevOps/CI‑CD)</li>
+            <li>8.31 Sécurité des API & interfaces</li>
+            <li>8.32 Durcissement des plateformes/systèmes</li>
+            <li>8.33 Résilience & capacité (tech)</li>
+            <li>8.34 Protection anti‑déni de service</li>
           </ol>
         </details>
       </div>
+      <p class="meta">Les 11 nouveaux contrôles 2022 incluent notamment : 5.7, 5.23, 5.30, 7.4, 8.9 à 8.12, 8.16, 8.23, 8.28. ([5](https://secureframe.com/hub/iso-27001/controls))</p>
     </section>
 
     <section class="group">
-      <header><h2>Sources & remarques</h2></header>
+      <header>
+        <h2>Sources & remarques</h2>
+      </header>
       <div class="controls">
-        <div class="info">
-          Les libellés sont synthétiques et destinés à guider l’évaluation. Utilisez la norme officielle pour les définitions formelles.
+        <div class="meta">
+          - Présentation des 4 catégories & panorama des 93 contrôles : <a href="https://www.isms.online/iso-27001/annex-a-2022/" target="_blank" rel="noreferrer">ISMS.online</a> ([2](https://www.isms.online/iso-27001/annex-a-2022/))<br>
+          - Liste détaillée (93) & intitulés usuels : <a href="https://hightable.io/iso-27001-annex-a-controls-reference-guide/" target="_blank" rel="noreferrer">Hightable</a> ([3](https://hightable.io/iso-27001-annex-a-controls-reference-guide/))<br>
+          - Article de synthèse & explications : <a href="https://advisera.com/iso27001/annex-a-controls/" target="_blank" rel="noreferrer">Advisera</a> ([4](https://advisera.com/iso27001/annex-a-controls/))<br>
+          - PDF récapitulatif (liste complète des 93 contrôles) : <a href="https://consultantslikeus.co.uk/wp-content/uploads/2025/04/93-annex-a-controls-pdf.pdf" target="_blank" rel="noreferrer">Consultants Like Us</a> ([1](https://consultantslikeus.co.uk/wp-content/uploads/2025/04/93-annex-a-controls-pdf.pdf))
         </div>
       </div>
     </section>
@@ -274,212 +282,45 @@
 
   <footer>
     <div class="wrap foot">
-      <div>© <span id="y"></span> Page d’évaluation ISO/IEC 27001:2022 (Annexe A)</div>
-      <div id="score"></div>
+      <div>© <span id="y"></span> ISO/IEC 27001:2022 – Annexe A (page pédagogique)</div>
+      <div>Mode <strong id="modeLabel">Clair</strong></div>
     </div>
   </footer>
 
   <script>
-    // ====== Helpers ======
-    const LS_PREFIX = 'iso27001-2022-ctrl-'; // localStorage key prefix
-
-    function $(sel, ctx=document){ return ctx.querySelector(sel); }
-    function $all(sel, ctx=document){ return [...ctx.querySelectorAll(sel)]; }
-
-    // Ajoute Oui/Non à chaque <li>
-    function enhanceList(){
-      $all('.controls li').forEach(li=>{
-        if(li.dataset.enhanced) return;
-        const ref = li.querySelector('.ref')?.textContent.trim() || '';
-        const labelText = li.querySelector('.label')?.textContent.trim() || li.textContent.trim();
-        const name = `ctrl-${ref}`;
-
-        const yn = document.createElement('span');
-        yn.className = 'yn';
-        yn.innerHTML = `
-          <label title="Oui"><input type="radio" name="${name}" value="oui"> Oui</label>
-          <label title="Non"><input type="radio" name="${name}" value="non"> Non</label>
-        `;
-        li.appendChild(yn);
-
-        // Restaurer état
-        const saved = localStorage.getItem(LS_PREFIX+ref);
-        if(saved){
-          const input = li.querySelector(\`input[value="\${saved}"]\`);
-          if(input) input.checked = true;
-        }
-
-        // Écouteur
-        $all(\`input[name="\${name}"]\`, li).forEach(inp=>{
-          inp.addEventListener('change', ()=>{
-            localStorage.setItem(LS_PREFIX+ref, inp.value);
-            updateStats();
-          });
-        });
-
-        // Marqueur
-        li.dataset.enhanced = '1';
-        li.dataset.ref = ref;
-        li.dataset.text = labelText;
-      });
-    }
-
-    // Statistiques
-    function computeStats(){
-      const groups = { org: {yes:0,no:0,tot:37}, people:{yes:0,no:0,tot:8}, physical:{yes:0,no:0,tot:14}, tech:{yes:0,no:0,tot:34} };
-      const details = []; // {ref, text, cat, val}
-      const mapSecToCat = (sec)=> sec.closest('#org')?'org':sec.closest('#people')?'people':sec.closest('#physical')?'physical':'tech';
-
-      $all('.controls').forEach(sec=>{
-        const cat = mapSecToCat(sec);
-        $all('li', sec).forEach(li=>{
-          const ref = li.dataset.ref || '';
-          const text = li.dataset.text || '';
-          const val = li.querySelector('input:checked')?.value || 'na';
-          if(val==='oui') groups[cat].yes++;
-          else if(val==='non') groups[cat].no++;
-          details.push({ref,text,cat,val});
-        });
-      });
-
-      const sumYes = Object.values(groups).reduce((a,g)=>a+g.yes,0);
-      const sumNo  = Object.values(groups).reduce((a,g)=>a+g.no,0);
-      const total  = 93;
-      const sumNA  = total - sumYes - sumNo;
-
-      return {groups, details, global:{yes:sumYes,no:sumNo,na:sumNA,total}};
-    }
-
-    function updateStats(){
-      const s = computeStats();
-      // Global
-      $('#g-yes').textContent = s.global.yes;
-      $('#g-no').textContent  = s.global.no;
-      $('#g-na').textContent  = s.global.na;
-      // Catégories (Oui seulement, indicatif)
-      $('#o-yes').textContent  = s.groups.org.yes;
-      $('#p-yes').textContent  = s.groups.people.yes;
-      $('#ph-yes').textContent = s.groups.physical.yes;
-      $('#t-yes').textContent  = s.groups.tech.yes;
-
-      const pct = Math.round((s.global.yes / s.global.total) * 100);
-      $('#score').textContent = `Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
-    }
-
-    // Rapport HTML
-    function generateReport(){
-      const s = computeStats();
-      const date = new Date().toLocaleString('fr-FR');
-      const title = 'Rapport — État de conformité ISO/IEC 27001:2022 (Annexe A)';
-
-      const by = (cat)=> s.details.filter(d=>d.cat===cat);
-      const list = (arr, want)=> arr.filter(d=>d.val===want).sort((a,b)=> a.ref.localeCompare(b.ref));
-
-      const cats = [
-        {id:'org', label:'Organisationnels (5.x)'},
-        {id:'people', label:'Personnes (6.x)'},
-        {id:'physical', label:'Physiques (7.x)'},
-        {id:'tech', label:'Technologiques (8.x)'},
-      ];
-
-      let html = `
-<!doctype html><html lang="fr"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${title}</title>
-<style>
-body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:#0f172a}
-h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
-table{border-collapse:collapse;width:100%;margin:8px 0}
-th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
-small{color:#64748b}
-</style></head><body>
-<h1>${title}</h1>
-<div><small>Généré le ${date}</small></div>
-
-<h2>Résumé global</h2>
-<table>
-<tr><th>Total contrôles</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr>
-<tr><td>93</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/93)*100)}%</td></tr>
-</table>
-
-<h2>Détail par catégorie</h2>
-<table>
-<tr><th>Catégorie</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>
-<tr><td>Organisationnels (5.x)</td><td>${s.groups.org.yes}</td><td>${s.groups.org.no}</td><td>${37 - s.groups.org.yes - s.groups.org.no}</td><td>37</td></tr>
-<tr><td>Personnes (6.x)</td><td>${s.groups.people.yes}</td><td>${s.groups.people.no}</td><td>${8  - s.groups.people.yes - s.groups.people.no}</td><td>8</td></tr>
-<tr><td>Physiques (7.x)</td><td>${s.groups.physical.yes}</td><td>${s.groups.physical.no}</td><td>${14 - s.groups.physical.yes - s.groups.physical.no}</td><td>14</td></tr>
-<tr><td>Technologiques (8.x)</td><td>${s.groups.tech.yes}</td><td>${s.groups.tech.no}</td><td>${34 - s.groups.tech.yes - s.groups.tech.no}</td><td>34</td></tr>
-</table>
-
-<h2>Contrôles “Non” (à traiter en priorité)</h2>
-`;
-
-      cats.forEach(c=>{
-        const arr = list(by(c.id), 'non');
-        html += `<h3>${c.label} — <span class="badge">${arr.length}</span></h3>`;
-        if(arr.length===0){ html += '<div><small>Aucun contrôle marqué Non.</small></div>'; }
-        else {
-          html += '<table><tr><th>Réf.</th><th>Intitulé (synthétique)</th></tr>';
-          arr.forEach(d=> html += `<tr><td>${d.ref}</td><td>${d.text}</td></tr>`);
-          html += '</table>';
-        }
-      });
-
-      html += `<h2>Contrôles “Non répondu” (à compléter)</h2>`;
-      cats.forEach(c=>{
-        const arr = list(by(c.id), 'na');
-        html += `<h3>${c.label} — <span class="badge">${arr.length}</span></h3>`;
-        if(arr.length===0){ html += '<div><small>Complet.</small></div>'; }
-        else {
-          html += '<table><tr><th>Réf.</th><th>Intitulé (synthétique)</th></tr>';
-          arr.forEach(d=> html += `<tr><td>${d.ref}</td><td>${d.text}</td></tr>`);
-          html += '</table>';
-        }
-      });
-
-      html += '</body></html>';
-
-      const win = window.open('', '_blank');
-      win.document.write(html);
-      win.document.close();
-      win.focus();
-    }
-
-    // Export CSV
-    function exportCSV(){
-      const {details} = computeStats();
-      const rows = [['Ref','Catégorie','Intitulé','Réponse']];
-      const map = {org:'Organisationnel',people:'Personnes',physical:'Physique',tech:'Technologique'};
-      details.forEach(d=> rows.push([d.ref, map[d.cat], d.text, d.val]));
-      const csv = rows.map(r=> r.map(x=> `"${(x||'').replace(/"/g,'""')}"`).join(';')).join('\n');
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'etat_iso27001_annexA.csv'; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    // Réinitialisation
-    function resetAll(){
-      if(!confirm('Supprimer toutes les réponses (Oui/Non) enregistrées ?')) return;
-      $all('.controls li').forEach(li=>{
-        const ref = li.dataset.ref;
-        localStorage.removeItem(LS_PREFIX+ref);
-        $all('input[type="radio"]', li).forEach(i=> i.checked=false);
-      });
-      updateStats();
-    }
-
-    // INIT
-    (function init(){
-      enhanceList();
-      updateStats();
-      $('#btn-report').addEventListener('click', generateReport);
-      $('#btn-csv').addEventListener('click', exportCSV);
-      $('#btn-reset').addEventListener('click', resetAll);
-      $('#y').textContent = new Date().getFullYear();
+    // Thème sombre/clair
+    (function(){
+      const ROOT=document.documentElement, KEY='iso27001-theme', BTN=document.getElementById('themeToggle'), modeLabel=document.getElementById('modeLabel');
+      const sysDark=window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const stored=localStorage.getItem(KEY); applyTheme(stored|| (sysDark?'dark':'light'));
+      BTN.addEventListener('click',()=>applyTheme(ROOT.getAttribute('data-theme')==='dark'?'light':'dark'));
+      BTN.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault(); BTN.click();}});
+      function applyTheme(t){ ROOT.setAttribute('data-theme',t); localStorage.setItem(KEY,t); BTN.setAttribute('aria-pressed',String(t==='dark')); modeLabel.textContent=t==='dark'?'Sombre':'Clair'; }
     })();
+
+    // Recherche live sur tous les <li>
+    (function(){
+      const q=document.getElementById('q');
+      const lists=[...document.querySelectorAll('.controls ol')];
+      const details=[...document.querySelectorAll('.controls details')];
+      q.addEventListener('input',()=>{
+        const s=q.value.trim().toLowerCase();
+        lists.forEach(ol=>{
+          let any=false;
+          [...ol.children].forEach(li=>{
+            const show= li.textContent.toLowerCase().includes(s);
+            li.style.display= show? '' : 'none';
+            if(show) any=true;
+          });
+          // ouvrir/fermer les sections details selon match
+          const wrapper=ol.closest('details');
+          if(wrapper){ wrapper.open = s ? any : wrapper.hasAttribute('data-default-open') || wrapper.open; }
+        });
+      });
+    })();
+
+    // Année footer
+    document.getElementById('y').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
