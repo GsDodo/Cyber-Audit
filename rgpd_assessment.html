@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RGPD — Évaluation opérationnelle : Oui/Non + Rapport</title>
+  <meta name="description" content="Auto-évaluation RGPD : mesures opérationnelles par thèmes, cases Oui/Non, sauvegarde locale, résultats imprimables, export CSV.">
+  <style>
+    :root{ --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8; --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24); }
+    [data-theme="light"]{ --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569; --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    a{color:var(--brand);text-decoration:none}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+    header{border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,0))}
+    .bar{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:16px 0}
+    h1{margin:0;font-size:22px}
+    .muted{color:var(--muted);font-size:13px;margin:4px 0 0 0}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
+    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;box-shadow:var(--shadow);font-weight:600}
+    .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
+    .stat{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--panel);font-size:13px;color:var(--muted)}
+    .stat b{color:var(--text)}
+    .group{border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);margin:16px 0}
+    .group header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .group h2{margin:0;font-size:18px}
+    .tag{display:inline-block;border-radius:999px;padding:4px 10px;background:rgba(91,141,239,.12);color:var(--brand);font-size:12px;margin-left:10px}
+    .controls{padding:6px 16px 16px}
+    .controls details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}
+    .controls summary{cursor:pointer;padding:10px 12px;font-weight:600}
+    .controls ol{margin:6px 0 14px 28px}
+    .controls li{margin:8px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+    .ref{min-width:70px;color:var(--muted);font-weight:700}
+    .label{flex:1}
+    .yn{display:inline-flex;gap:10px;align-items:center}
+    .yn label{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
+    .yn input{accent-color:var(--brand)}
+    footer{border-top:1px solid var(--line);margin-top:24px}
+    .foot{padding:12px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    @media print {.toolbar{display:none} details{open:true}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <div>
+        <h1>RGPD — Évaluation opérationnelle (Oui/Non)</h1>
+        <p class="muted">Paraphrases pédagogiques (non officielles). Les réponses sont sauvegardées dans votre navigateur.</p>
+      </div>
+      <div class="stat">Global : <b id="g-yes">0</b> Oui • <b id="g-no">0</b> Non • <b id="g-na">0</b> Non répondu • Total <b id="g-total">0</b></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="toolbar">
+      <button id="btn-report" class="btn btn--brand">🧾 Générer la page de résultats</button>
+      <button id="btn-csv" class="btn">⬇️ Exporter CSV</button>
+      <button id="btn-reset" class="btn">♻️ Réinitialiser</button>
+      <span class="muted">Thèmes : gouvernance, base légale, droits, DPIA, registres, sécurité, sous‑traitants, transferts, violations, rétention, transparence, cookies, formation.</span>
+    </div>
+
+    <section class="group">
+      <header><h2>Infos</h2></header>
+      <div class="controls"><div class="muted">Utilisez les résultats pour alimenter votre registre de traitements, votre registre des violations, vos DPA et votre programme de conformité.</div></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div>© <span id="y"></span> Évaluation RGPD — Auto‑audit</div>
+      <div id="score"></div>
+    </div>
+  </footer>
+
+  <script>
+    const LS_PREFIX = 'rgpd-ctrl-';
+    const THEMES = [["GOV","Gouvernance & DPO",[["GOV.1","Désignation DPO & missions"],["GOV.2","Politique vie privée & programme"],["GOV.3","Privacy by design/default"],["GOV.4","Comité & reporting"]]],["BASE","Bases légales & finalités",[["BASE.1","Finalités légitimes & déterminées"],["BASE.2","Base légale par traitement"],["BASE.3","Intérêts légitimes testés"]]],["RIGHTS","Droits des personnes",[["RIGHTS.1","Process DSAR (SLA)"],["RIGHTS.2","Vérif identité & journal"],["RIGHTS.3","Information claire des droits"]]],["DPIA","Analyses d’impact (DPIA)",[["DPIA.1","Critères & cartographie"],["DPIA.2","Conduite & revue"],["DPIA.3","Consultation autorité si besoin"]]],["REG","Registres & documentation",[["REG.1","Registre des traitements"],["REG.2","Registre des violations"],["REG.3","Traçabilité consentements"]]],["SEC","Sécurité",[["SEC.1","Contrôles d’accès / chiffrement / sauvegardes"],["SEC.2","Tests, vulnérabilités & correctifs"],["SEC.3","Formations & NDA"]]],["PROC","Sous-traitants (DPA)",[["PROC.1","Diligence & sélection"],["PROC.2","Accords DPA conformes"],["PROC.3","Supervision & remédiations"]]],["XFER","Transferts hors UE/EEE",[["XFER.1","Mécanisme de transfert"],["XFER.2","TIA & TOMs"],["XFER.3","Information & registres"]]],["BREACH","Violations",[["BREACH.1","Détection & analyse"],["BREACH.2","Notifications (72h)"],["BREACH.3","Journal & retours d’expérience"]]],["RET","Rétention & minimisation",[["RET.1","Politiques de conservation"],["RET.2","Suppression/Anonymisation/Archivage"],["RET.3","Minimisation des données"]]],["TRP","Transparence",[["TRP.1","Mentions d’information"],["TRP.2","Politique cookies & CMP"],["TRP.3","Cohérence multi‑canaux"]]],["CK","Cookies",[["CK.1","Consentement préalable & preuve"],["CK.2","Refus aussi simple"],["CK.3","Granularité par finalité"]]],["TRAIN","Formation",[["TRAIN.1","Programme de formation"],["TRAIN.2","Ciblage des populations"],["TRAIN.3","Indicateurs d’efficacité"]]]];
+
+    function renderThemes(){ const main=document.querySelector('main.wrap'); const sources=document.querySelector('section.group:last-of-type'); let total=0; THEMES.forEach(([code,title,items])=>{ const sec=document.createElement('section'); sec.className='group'; sec.id=code.toLowerCase(); sec.innerHTML=`<header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header><div class="controls" data-theme="${code}"><details open data-default-open><summary>Mesures ${code} (${items.length})</summary><ol></ol></details></div>`; const ol=sec.querySelector('ol'); items.forEach(([ref,label])=>{ total++; const li=document.createElement('li'); li.dataset.ref=ref; li.dataset.text=label; li.dataset.theme=code; li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span><span class="yn"><label><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label><label><input type="radio" name="ctrl-${ref}" value="non"> Non</label></span>`; const saved=localStorage.getItem(LS_PREFIX+ref); if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; } li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change',()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); })); ol.appendChild(li); }); main.insertBefore(sec, sources); }); document.getElementById('g-total').textContent=total; }
+
+    function computeStats(){ const perTheme={}; THEMES.forEach(([code,,items])=> perTheme[code]={yes:0,no:0,tot:items.length}); const details=[]; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref, text=li.dataset.text, th=li.dataset.theme; const val=li.querySelector('input:checked')?.value || 'na'; if(val==='oui') perTheme[th].yes++; else if(val==='non') perTheme[th].no++; details.push({ref,text,theme:th,val}); }); const yes=Object.values(perTheme).reduce((a,g)=>a+g.yes,0); const no=Object.values(perTheme).reduce((a,g)=>a+g.no,0); const tot=Object.values(perTheme).reduce((a,g)=>a+g.tot,0); const na=tot-yes-no; return {perTheme, details, global:{yes,no,na,total:tot}}; }
+
+    function updateStats(){ const s=computeStats(); document.getElementById('g-yes').textContent=s.global.yes; document.getElementById('g-no').textContent=s.global.no; document.getElementById('g-na').textContent=s.global.na; const pct=Math.round((s.global.yes/s.global.total)*100); document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`; try{ if(parent&&parent!==window){ parent.postMessage({type:'UCAP_SUMMARY', norm:'RGPD', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct }}, '*'); } }catch(e){} }
+
+    function generateReport(){ const s=computeStats(); const d=new Date().toLocaleString('fr-FR'); const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref)); let html=`<!doctype html><html lang=fr><head><meta charset=utf-8><meta name=viewport content=width=device-width,initial-scale=1><title>Résultats — RGPD</title></head><body><h1>Résultats — RGPD</h1><small>Généré le ${d}</small><h2>Résumé global</h2><p>Total ${s.global.total} • Oui ${s.global.yes} • Non ${s.global.no} • NR ${s.global.na} • ${Math.round((s.global.yes/s.global.total)*100)}%</p></body></html>`; const w=open('','_blank'); w.document.write(html); w.document.close(); }
+
+    function exportCSV(){ const {details}=computeStats(); const rows=[["Ref","Thème","Intitulé","Réponse"]]; details.forEach(d=> rows.push([d.ref,d.theme,d.text,d.val])); const csv=rows.map(r=> r.map(x=>'"'+x.replace(/"/g,'""')+'"').join(';')).join('\n'); const b=new Blob([csv],{type:'text/csv'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='etat_rgpd.csv'; a.click(); URL.revokeObjectURL(u); }
+
+    function resetAll(){ if(!confirm('Supprimer toutes les réponses ?')) return; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref; localStorage.removeItem(LS_PREFIX+ref); li.querySelectorAll('input[type=radio]').forEach(i=> i.checked=false); }); updateStats(); }
+
+    (function(){ renderThemes(); updateStats(); document.getElementById('btn-report').addEventListener('click', generateReport); document.getElementById('btn-csv').addEventListener('click', exportCSV); document.getElementById('btn-reset').addEventListener('click', resetAll); document.getElementById('y').textContent=new Date().getFullYear(); })();
+  </script>
+</body>
+</html>
