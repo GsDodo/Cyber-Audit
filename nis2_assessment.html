@@ -45,7 +45,7 @@
     <div class="wrap bar">
       <div>
         <h1>NIS2 — Évaluation des mesures (13 domaines ENISA) — Oui/Non</h1>
-        <p class="muted">Paraphrases opérationnelles à partir de l’art. 21 NIS2 et des domaines ENISA. Réponses stockées localement.</p>
+        <p class="muted">Paraphrases opérationnelles à partir de l’art. 21 NIS2 et des domaines ENISA. Réponses stockées localement.</p>
       </div>
       <div class="stat">Global : <b id="g-yes">0</b> Oui • <b id="g-no">0</b> Non • <b id="g-na">0</b> Non répondu • Total <b id="g-total">0</b></div>
     </div>
@@ -73,18 +73,34 @@
 
   <script>
     const LS_PREFIX='nis2-ctrl-';
-    const DOMAINS=[["D1","Politique SSI des réseaux et systèmes",[["D1.1","Politique SSI approuvée, rôles & responsabilités"],["D1.2","Objectifs SSI alignés au contexte et exigences"],["D1.3","Cycle de vie documentaire (diffusion, revue, version)"],["D1.4","Classification & manipulation de l’information"],["D1.5","SSI intégrée aux projets et changements"],["D1.6","Gouvernance sécurité tierce (comités, reporting)"]]],["D2","Gestion des risques",[["D2.1","Méthodologie d’analyse des risques"],["D2.2","Appétence et critères de risque"],["D2.3","Registre des risques (menaces, vulnérabilités, impacts)"],["D2.4","Plans de traitement et suivi"],["D2.5","Intégration ERM / reporting direction"],["D2.6","Scénarios & revue annuelle"]]],["D3","Gestion des incidents",[["D3.1","Détection, triage, priorisation"],["D3.2","Playbooks & rôles IR (tech/com/juridique)"],["D3.3","Notifications aux autorités/parties prenantes (délais)"],["D3.4","Journal d’incidents & horodatage fiable"],["D3.5","Leçons apprises & actions correctives"],["D3.6","Collecte de preuves (forensic readiness)"]]],["D4","Continuité d’activité & gestion de crise",[["D4.1","BIA, RTO/RPO"],["D4.2","PRA/PCA (sauvegardes/DRP)"],["D4.3","Tests réguliers & amélioration continue"],["D4.4","Plan de crise & communication d’urgence"],["D4.5","Journalisation & redondance services critiques"]]],["D5","Sécurité de la chaîne d’approvisionnement",[["D5.1","Due diligence fournisseurs & criticité"],["D5.2","Clauses SSI (audit, notif, sous-traitants)"],["D5.3","Évaluations périodiques & KPIs"],["D5.4","Gestion des dépendances & SPOF"],["D5.5","Plan de sortie/réversibilité (cloud/managed services)"]]],["D6","Acquisition, développement & maintenance",[["D6.1","Exigences SSI dans achats/contrats IT/OT"],["D6.2","SDLC sécurisé (revues, tests SAST/DAST)"],["D6.3","Gestion des secrets/clé & configurations"],["D6.4","Vulnérabilités & patching (SLA)"],["D6.5","Durcissement des systèmes (benchmarks)"]]],["D7","Évaluation de l’efficacité des mesures",[["D7.1","Programme de mesure (KPI/KRI)"],["D7.2","Revue d’efficacité (audits, tests)"],["D7.3","Tableaux de bord & pilotage"],["D7.4","Amélioration continue et remédiations"]]],["D8","Hygiène de base & formation",[["D8.1","Politiques d’usage acceptable"],["D8.2","Gestion des correctifs OS/apps/firmware"],["D8.3","Sauvegardes & restaurations testées"],["D8.4","Sensibilisation & simulations phishing"],["D8.5","Inventaire des actifs & EDR/antimalware"]]],["D9","Cryptographie",[["D9.1","Politique crypto & inventaire des usages"],["D9.2","Algorithmes/conformité (chiffrement, signature)"],["D9.3","Gestion des clés (rotation, révocation, HSM)"],["D9.4","Chiffrement au repos & en transit"]]],["D10","Ressources humaines & sécurité",[["D10.1","Screening adapté"],["D10.2","Clauses SSI & NDA"],["D10.3","Onboarding/offboarding (droits/équipements)"],["D10.4","Rôles cyber dans fiches de poste"]]],["D11","Contrôle d’accès",[["D11.1","Moindre privilège & séparation des rôles"],["D11.2","MFA/CA pour distants & privilèges"],["D11.3","Revue périodique des droits & traçabilité"],["D11.4","PAM/coffre-fort à secrets"]]],["D12","Gestion des actifs",[["D12.1","Inventaire matériel/logiciel & owner"],["D12.2","Classification & étiquetage info"],["D12.3","Cycle de vie (acquisition/transfert/retrait)"],["D12.4","Médias amovibles : traçabilité & sécurité"]]],["D13","Sécurité environnementale & physique",[["D13.1","Périmètres & contrôles d’accès physiques"],["D13.2","Protection environnementale (énergie/clim/incendie)"],["D13.3","Surveillance (CCTV, alarmes), zones sécurisées"],["D13.4","Élimination/recyclage sécurisé (supports/équipements)"]]]];
+    const DOMAINS=[["D1","Politique SSI des réseaux et systèmes",[["D1.1","Politique SSI approuvée, rôles & responsabilités"],["D1.2","Objectifs SSI alignés au contexte et exigences"],["D1.3","Cycle de vie documentaire (diffusion, revue, version)"],["D1.4","Classification & manipulation de l’information"],["D1.5","SSI intégrée aux projets et changements"],["D1.6","Gouvernance sécurité tierce (comités, reporting)"]]],
+      ["D2","Gestion des risques",[["D2.1","Méthodologie d’analyse des risques"],["D2.2","Appétence et critères de risque"],["D2.3","Registre des risques (menaces, vulnérabilités, impacts)"],["D2.4","Plans de traitement et suivi"],["D2.5","Intégration ERM / reporting direction"],["D2.6","Scénarios & revue annuelle"]]],
+      ["D3","Gestion des incidents",[["D3.1","Détection, triage, priorisation"],["D3.2","Playbooks & rôles IR (tech/com/juridique)"],["D3.3","Notifications aux autorités/parties prenantes (délais)"],["D3.4","Journal d’incidents & horodatage fiable"],["D3.5","Leçons apprises & actions correctives"],["D3.6","Collecte de preuves (forensic readiness)"]]],
+      ["D4","Continuité d’activité & gestion de crise",[["D4.1","BIA, RTO/RPO"],["D4.2","PRA/PCA (sauvegardes/DRP)"],["D4.3","Tests réguliers & amélioration continue"],["D4.4","Plan de crise & communication d’urgence"],["D4.5","Journalisation & redondance services critiques"]]],
+      ["D5","Sécurité de la chaîne d’approvisionnement",[["D5.1","Due diligence fournisseurs & criticité"],["D5.2","Clauses SSI (audit, notif, sous-traitants)"],["D5.3","Évaluations périodiques & KPIs"],["D5.4","Gestion des dépendances & SPOF"],["D5.5","Plan de sortie/réversibilité (cloud/managed services)"]]],
+      ["D6","Acquisition, développement & maintenance",[["D6.1","Exigences SSI dans achats/contrats IT/OT"],["D6.2","SDLC sécurisé (revues, tests SAST/DAST)"],["D6.3","Gestion des secrets/clé & configurations"],["D6.4","Vulnérabilités & patching (SLA)"],["D6.5","Durcissement des systèmes (benchmarks)"]]],
+      ["D7","Évaluation de l’efficacité des mesures",[["D7.1","Programme de mesure (KPI/KRI)"],["D7.2","Revue d’efficacité (audits, tests)"],["D7.3","Tableaux de bord & pilotage"],["D7.4","Amélioration continue et remédiations"]]],
+      ["D8","Hygiène de base & formation",[["D8.1","Politiques d’usage acceptable"],["D8.2","Gestion des correctifs OS/apps/firmware"],["D8.3","Sauvegardes & restaurations testées"],["D8.4","Sensibilisation & simulations phishing"],["D8.5","Inventaire des actifs & EDR/antimalware"]]],
+      ["D9","Cryptographie",[["D9.1","Politique crypto & inventaire des usages"],["D9.2","Algorithmes/conformité (chiffrement, signature)"],["D9.3","Gestion des clés (rotation, révocation, HSM)"],["D9.4","Chiffrement au repos & en transit"]]],
+      ["D10","Ressources humaines & sécurité",[["D10.1","Screening adapté"],["D10.2","Clauses SSI & NDA"],["D10.3","Onboarding/offboarding (droits/équipements)"],["D10.4","Rôles cyber dans fiches de poste"]]],
+      ["D11","Contrôle d’accès",[["D11.1","Moindre privilège & séparation des rôles"],["D11.2","MFA/CA pour distants & privilèges"],["D11.3","Revue périodique des droits & traçabilité"],["D11.4","PAM/coffre-fort à secrets"]]],
+      ["D12","Gestion des actifs",[["D12.1","Inventaire matériel/logiciel & owner"],["D12.2","Classification & étiquetage info"],["D12.3","Cycle de vie (acquisition/transfert/retrait)"],["D12.4","Médias amovibles : traçabilité & sécurité"]]],
+      ["D13","Sécurité environnementale & physique",[["D13.1","Périmètres & contrôles d’accès physiques"],["D13.2","Protection environnementale (énergie/clim/incendie)"],["D13.3","Surveillance (CCTV, alarmes), zones sécurisées"],["D13.4","Élimination/recyclage sécurisé (supports/équipements)"]]]];
 
     function renderDomains(){
       const main=document.querySelector('main.wrap'); const sources=document.querySelector('section.group:last-of-type'); let total=0;
       DOMAINS.forEach(([code,title,items])=>{
         const sec=document.createElement('section'); sec.className='group'; sec.id=code.toLowerCase();
-        sec.innerHTML=`<header><h2>${code} — ${title} <span class=\"tag\">${items.length}</span></h2></header><div class=\"controls\" data-domain=\"${code}\"><details open data-default-open><summary>Mesures ${code} (${items.length})</summary><ol></ol></details></div>`;
+        sec.innerHTML=`<header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header>
+          <div class="controls" data-domain="${code}"><details open data-default-open>
+          <summary>Mesures ${code} (${items.length})</summary><ol></ol></details></div>`;
         const ol=sec.querySelector('ol');
         items.forEach(([ref,label])=>{
           total++;
           const li=document.createElement('li'); li.dataset.ref=ref; li.dataset.text=label; li.dataset.domain=code;
-          li.innerHTML=`<span class=\"ref\">${ref}</span><span class=\"label\">${label}</span><span class=\"yn\"><label title=\"Oui\"><input type=\"radio\" name=\"ctrl-${ref}\" value=\"oui\"> Oui</label><label title=\"Non\"><input type=\"radio\" name=\"ctrl-${ref}\" value=\"non\"> Non</label></span>`;
+          li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span>
+            <span class="yn"><label title="Oui"><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label>
+            <label title="Non"><input type="radio" name="ctrl-${ref}" value="non"> Non</label></span>`;
           const saved=localStorage.getItem(LS_PREFIX+ref); if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; }
           li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change', ()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); }));
           ol.appendChild(li);
@@ -96,36 +112,148 @@
 
     function computeStats(){
       const perDomain={}; DOMAINS.forEach(([code,,items])=> perDomain[code]={yes:0,no:0,tot:items.length});
-      const details=[]; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref; const text=li.dataset.text; const dom=li.dataset.domain; const val=li.querySelector('input:checked')?.value || 'na'; if(val==='oui') perDomain[dom].yes++; else if(val==='non') perDomain[dom].no++; details.push({ref,text,domain:dom,val}); });
-      const yes=Object.values(perDomain).reduce((a,g)=>a+g.yes,0); const no=Object.values(perDomain).reduce((a,g)=>a+g.no,0); const tot=Object.values(perDomain).reduce((a,g)=>a+g.tot,0); const na=tot-yes-no;
+      const details=[];
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref=li.dataset.ref; const text=li.dataset.text; const dom=li.dataset.domain;
+        const val = li.querySelector('input:checked')?.value || 'na'; // ✅ bug corrigé
+        if(val==='oui') perDomain[dom].yes++; else if(val==='non') perDomain[dom].no++;
+        details.push({ref,text,domain:dom,val});
+      });
+      const yes=Object.values(perDomain).reduce((a,g)=>a+g.yes,0);
+      const no =Object.values(perDomain).reduce((a,g)=>a+g.no,0);
+      const tot=Object.values(perDomain).reduce((a,g)=>a+g.tot,0);
+      const na=tot-yes-no;
       return {perDomain, details, global:{yes,no,na,total:tot}};
     }
 
     function updateStats(){
-      const s=computeStats(); document.getElementById('g-yes').textContent=s.global.yes; document.getElementById('g-no').textContent=s.global.no; document.getElementById('g-na').textContent=s.global.na; const pct=Math.round((s.global.yes/s.global.total)*100); document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
-      try{ if(window.parent && window.parent!==window){ window.parent.postMessage({type:'UCAP_SUMMARY', norm:'NIS2', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct:pct}}, '*'); } }catch(e){}
+      const s=computeStats();
+      document.getElementById('g-yes').textContent=s.global.yes;
+      document.getElementById('g-no').textContent =s.global.no;
+      document.getElementById('g-na').textContent =s.global.na;
+      const pct=Math.round((s.global.yes/s.global.total)*100);
+      document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
+      try{
+        if(window.parent && window.parent!==window){
+          window.parent.postMessage({type:'UCAP_SUMMARY', norm:'NIS2', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct:pct}}, '*');
+        }
+      }catch(e){}
     }
 
+    // --- Rapport PDF (auto impression)
     function generateReport(){
-      const s=computeStats(); const d=new Date().toLocaleString('fr-FR'); const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
-      let html=`<!doctype html><html lang=\"fr\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Résultats — NIS2 (13 domaines)</title><style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:#0f172a}h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px} h3{margin:12px 0 6px}.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}small{color:#64748b}@media print{ .noprint{display:none} }</style></head><body>`;
-      html+=`<h1>Résultats — NIS2 (13 domaines ENISA)</h1><div class=\"noprint\"><small>Généré le ${d}</small></div>`;
-      html+=`<h2>Résumé global</h2><table><tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr><tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr></table>`;
-      html+=`<h2>Détail par domaine</h2><table><tr><th>Domaine</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
-      DOMAINS.forEach(([code,title,items])=>{ const dmn=s.perDomain[code]; html+=`<tr><td>${code} — ${title}</td><td>${dmn.yes}</td><td>${dmn.no}</td><td>${items.length-dmn.yes-dmn.no}</td><td>${items.length}</td></tr>`; });
-      html+=`</table><h2>Mesures “Non” (à traiter)</h2>`;
-      DOMAINS.forEach(([code,title])=>{ const arr=list(s.details.filter(x=>x.domain===code),'non'); html+=`<h3>${code} — ${title} <span class=\"badge\">${arr.length}</span></h3>`; if(arr.length===0){ html+='<div><small>Aucune.</small></div>'; } else { html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; } });
-      html+=`<h2>Mesures “Non répondu” (à compléter)</h2>`;
-      DOMAINS.forEach(([code,title])=>{ const arr=list(s.details.filter(x=>x.domain===code),'na'); html+=`<h3>${code} — ${title} <span class=\"badge\">${arr.length}</span></h3>`; if(arr.length===0){ html+='<div><small>Complet.</small></div>'; } else { html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; } });
-      html+='</body></html>';
-      const w=window.open('','_blank'); w.document.write(html); w.document.close(); w.focus();
+      const s=computeStats(); const now=new Date();
+      const d=now.toLocaleString('fr-FR');
+      const fileSafe = now.toISOString().slice(0,19).replace(/[:T]/g,'-');
+      const title = `CyberAudit - Résultats NIS2 - ${fileSafe}`;
+
+      const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
+      let html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+      html+=`<title>${title}</title><style>
+        :root{--ink:#0f172a;--muted:#64748b;--band:#f3f4f6}
+        body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        h1{font-size:22px;margin:0 0 6px}
+        h2{margin:16px 0 8px}
+        h3{margin:12px 0 6px}
+        small{color:var(--muted)}
+        .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
+        table{border-collapse:collapse;width:100%;margin:8px 0}
+        th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
+        tr:nth-child(even){background:var(--band)}
+        .noprint{margin:6px 0 10px}
+        .page-break{break-after:page}
+        @page{size:A4;margin:14mm}
+        @media print {.noprint{display:none}}
+      </style></head><body>`;
+
+      html+=`<h1>Résultats — NIS2 (13 domaines ENISA)</h1>
+             <div class="noprint"><small>Généré le ${d}</small> — <button onclick="window.print()">Télécharger en PDF</button></div>`;
+
+      html+=`<h2>Résumé global</h2>
+             <table><tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr>
+             <tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr></table>`;
+
+      html+=`<h2>Détail par domaine</h2>
+             <table><tr><th>Domaine</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
+      (function(){
+        const map = new Map(DOMAINS.map(([code, title, items])=>[code,{title,tot:items.length}]));
+        Object.entries(s.perDomain).forEach(([code,dmn])=>{
+          const meta = map.get(code);
+          html+=`<tr><td>${code} — ${meta.title}</td><td>${dmn.yes}</td><td>${dmn.no}</td><td>${meta.tot-dmn.yes-dmn.no}</td><td>${meta.tot}</td></tr>`;
+        });
+      })();
+      html+='</table>';
+
+      html+=`<div class="page-break"></div><h2>Mesures “Non” (à traiter)</h2>`;
+      DOMAINS.forEach(([code,title])=>{
+        const arr=list(s.details.filter(x=>x.domain===code),'non');
+        html+=`<h3>${code} — ${title} <span class="badge">${arr.length}</span></h3>`;
+        if(arr.length===0){ html+='<div><small>Aucune.</small></div>'; }
+        else {
+          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
+          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
+          html+='</table>';
+        }
+      });
+
+      html+=`<div class="page-break"></div><h2>Mesures “Non répondu” (à compléter)</h2>`;
+      DOMAINS.forEach(([code,title])=>{
+        const arr=list(s.details.filter(x=>x.domain===code),'na');
+        html+=`<h3>${code} — ${title} <span class="badge">${arr.length}</span></h3>`;
+        if(arr.length===0){ html+='<div><small>Complet.</small></div>'; }
+        else {
+          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
+          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
+          html+='</table>';
+        }
+      });
+
+      html+=`<script>
+        document.title = ${JSON.stringify(title)};
+        window.addEventListener('load', () => setTimeout(()=>{ try{ window.print(); }catch(e){} }, 250));
+        window.addEventListener('afterprint', ()=>{ try{ window.close(); }catch(e){} });
+      <\/script></body></html>`;
+
+      const win = window.open('about:blank', '_blank', 'noopener,noreferrer');
+      if(!win){
+        const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+        window.location.href = dataUrl;
+        return;
+      }
+      win.document.open(); win.document.write(html); win.document.close();
+      try{ win.focus(); }catch(e){}
     }
 
-    function exportCSV(){ const {details}=computeStats(); const rows=[["Ref","Domaine","Intitulé","Réponse"]]; details.forEach(d=> rows.push([d.ref, d.domain, d.text, d.val])); const csv=rows.map(r=> r.map(x=> '"'+(x||'').replace(/"/g,'""')+'"').join(';')).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='etat_nis2_13_domaines.csv'; a.click(); URL.revokeObjectURL(url); }
+    // --- CSV : BOM + Safari/iOS + révocation différée
+    function exportCSV(){
+      const {details}=computeStats();
+      const rows=[["Ref","Domaine","Intitulé","Réponse"]];
+      details.forEach(d=> rows.push([d.ref, d.domain, d.text, d.val]));
+      const csvBody = rows.map(r => r.map(x => '"'+(x||'').replace(/"/g,'""')+'"').join(';')).join('\n');
+      const BOM = '\uFEFF';
+      const blob=new Blob([BOM + csvBody],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='etat_nis2_13_domaines.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    }
 
-    function resetAll(){ if(!confirm('Supprimer toutes les réponses enregistrées ?')) return; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref; localStorage.removeItem(LS_PREFIX+ref); li.querySelectorAll('input[type="radio"]').forEach(i=> i.checked=false); }); updateStats(); }
+    function resetAll(){
+      if(!confirm('Supprimer toutes les réponses enregistrées ?')) return;
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref=li.dataset.ref; localStorage.removeItem(LS_PREFIX+ref);
+        li.querySelectorAll('input[type="radio"]').forEach(i=> i.checked=false);
+      });
+      updateStats();
+    }
 
-    (function(){ renderDomains(); updateStats(); document.getElementById('btn-report').addEventListener('click', generateReport); document.getElementById('btn-csv').addEventListener('click', exportCSV); document.getElementById('btn-reset').addEventListener('click', resetAll); document.getElementById('y').textContent=new Date().getFullYear(); })();
+    window.addEventListener('DOMContentLoaded', ()=>{
+      renderDomains(); updateStats();
+      document.getElementById('btn-report')?.addEventListener('click', generateReport);
+      document.getElementById('btn-csv')?.addEventListener('click', exportCSV);
+      document.getElementById('btn-reset')?.addEventListener('click', resetAll);
+      document.getElementById('y').textContent=new Date().getFullYear();
+    });
   </script>
 </body>
 </html>
