@@ -74,21 +74,211 @@
 
   <script>
     const LS_PREFIX = 'rgpd-ctrl-';
-    const THEMES = [["GOV","Gouvernance & DPO",[["GOV.1","Désignation DPO & missions"],["GOV.2","Politique vie privée & programme"],["GOV.3","Privacy by design/default"],["GOV.4","Comité & reporting"]]],["BASE","Bases légales & finalités",[["BASE.1","Finalités légitimes & déterminées"],["BASE.2","Base légale par traitement"],["BASE.3","Intérêts légitimes testés"]]],["RIGHTS","Droits des personnes",[["RIGHTS.1","Process DSAR (SLA)"],["RIGHTS.2","Vérif identité & journal"],["RIGHTS.3","Information claire des droits"]]],["DPIA","Analyses d’impact (DPIA)",[["DPIA.1","Critères & cartographie"],["DPIA.2","Conduite & revue"],["DPIA.3","Consultation autorité si besoin"]]],["REG","Registres & documentation",[["REG.1","Registre des traitements"],["REG.2","Registre des violations"],["REG.3","Traçabilité consentements"]]],["SEC","Sécurité",[["SEC.1","Contrôles d’accès / chiffrement / sauvegardes"],["SEC.2","Tests, vulnérabilités & correctifs"],["SEC.3","Formations & NDA"]]],["PROC","Sous-traitants (DPA)",[["PROC.1","Diligence & sélection"],["PROC.2","Accords DPA conformes"],["PROC.3","Supervision & remédiations"]]],["XFER","Transferts hors UE/EEE",[["XFER.1","Mécanisme de transfert"],["XFER.2","TIA & TOMs"],["XFER.3","Information & registres"]]],["BREACH","Violations",[["BREACH.1","Détection & analyse"],["BREACH.2","Notifications (72h)"],["BREACH.3","Journal & retours d’expérience"]]],["RET","Rétention & minimisation",[["RET.1","Politiques de conservation"],["RET.2","Suppression/Anonymisation/Archivage"],["RET.3","Minimisation des données"]]],["TRP","Transparence",[["TRP.1","Mentions d’information"],["TRP.2","Politique cookies & CMP"],["TRP.3","Cohérence multi‑canaux"]]],["CK","Cookies",[["CK.1","Consentement préalable & preuve"],["CK.2","Refus aussi simple"],["CK.3","Granularité par finalité"]]],["TRAIN","Formation",[["TRAIN.1","Programme de formation"],["TRAIN.2","Ciblage des populations"],["TRAIN.3","Indicateurs d’efficacité"]]]];
 
-    function renderThemes(){ const main=document.querySelector('main.wrap'); const sources=document.querySelector('section.group:last-of-type'); let total=0; THEMES.forEach(([code,title,items])=>{ const sec=document.createElement('section'); sec.className='group'; sec.id=code.toLowerCase(); sec.innerHTML=`<header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header><div class="controls" data-theme="${code}"><details open data-default-open><summary>Mesures ${code} (${items.length})</summary><ol></ol></details></div>`; const ol=sec.querySelector('ol'); items.forEach(([ref,label])=>{ total++; const li=document.createElement('li'); li.dataset.ref=ref; li.dataset.text=label; li.dataset.theme=code; li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span><span class="yn"><label><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label><label><input type="radio" name="ctrl-${ref}" value="non"> Non</label></span>`; const saved=localStorage.getItem(LS_PREFIX+ref); if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; } li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change',()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); })); ol.appendChild(li); }); main.insertBefore(sec, sources); }); document.getElementById('g-total').textContent=total; }
+    const THEMES = [["GOV","Gouvernance & DPO",[["GOV.1","Désignation DPO & missions"],["GOV.2","Politique vie privée & programme"],["GOV.3","Privacy by design/default"],["GOV.4","Comité & reporting"]]],
+      ["BASE","Bases légales & finalités",[["BASE.1","Finalités légitimes & déterminées"],["BASE.2","Base légale par traitement"],["BASE.3","Intérêts légitimes testés"]]],
+      ["RIGHTS","Droits des personnes",[["RIGHTS.1","Process DSAR (SLA)"],["RIGHTS.2","Vérif identité & journal"],["RIGHTS.3","Information claire des droits"]]],
+      ["DPIA","Analyses d’impact (DPIA)",[["DPIA.1","Critères & cartographie"],["DPIA.2","Conduite & revue"],["DPIA.3","Consultation autorité si besoin"]]],
+      ["REG","Registres & documentation",[["REG.1","Registre des traitements"],["REG.2","Registre des violations"],["REG.3","Traçabilité consentements"]]],
+      ["SEC","Sécurité",[["SEC.1","Contrôles d’accès / chiffrement / sauvegardes"],["SEC.2","Tests, vulnérabilités & correctifs"],["SEC.3","Formations & NDA"]]],
+      ["PROC","Sous-traitants (DPA)",[["PROC.1","Diligence & sélection"],["PROC.2","Accords DPA conformes"],["PROC.3","Supervision & remédiations"]]],
+      ["XFER","Transferts hors UE/EEE",[["XFER.1","Mécanisme de transfert"],["XFER.2","TIA & TOMs"],["XFER.3","Information & registres"]]],
+      ["BREACH","Violations",[["BREACH.1","Détection & analyse"],["BREACH.2","Notifications (72h)"],["BREACH.3","Journal & retours d’expérience"]]],
+      ["RET","Rétention & minimisation",[["RET.1","Politiques de conservation"],["RET.2","Suppression/Anonymisation/Archivage"],["RET.3","Minimisation des données"]]],
+      ["TRP","Transparence",[["TRP.1","Mentions d’information"],["TRP.2","Politique cookies & CMP"],["TRP.3","Cohérence multi‑canaux"]]],
+      ["CK","Cookies",[["CK.1","Consentement préalable & preuve"],["CK.2","Refus aussi simple"],["CK.3","Granularité par finalité"]]],
+      ["TRAIN","Formation",[["TRAIN.1","Programme de formation"],["TRAIN.2","Ciblage des populations"],["TRAIN.3","Indicateurs d’efficacité"]]]
+    ];
 
-    function computeStats(){ const perTheme={}; THEMES.forEach(([code,,items])=> perTheme[code]={yes:0,no:0,tot:items.length}); const details=[]; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref, text=li.dataset.text, th=li.dataset.theme; const val=li.querySelector('input:checked')?.value || 'na'; if(val==='oui') perTheme[th].yes++; else if(val==='non') perTheme[th].no++; details.push({ref,text,theme:th,val}); }); const yes=Object.values(perTheme).reduce((a,g)=>a+g.yes,0); const no=Object.values(perTheme).reduce((a,g)=>a+g.no,0); const tot=Object.values(perTheme).reduce((a,g)=>a+g.tot,0); const na=tot-yes-no; return {perTheme, details, global:{yes,no,na,total:tot}}; }
+    function renderThemes(){
+      const main=document.querySelector('main.wrap');
+      const sources=document.querySelector('section.group:last-of-type');
+      let total=0;
+      THEMES.forEach(([code,title,items])=>{
+        const sec=document.createElement('section'); sec.className='group'; sec.id=code.toLowerCase();
+        sec.innerHTML=`<header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header>
+          <div class="controls" data-theme="${code}">
+            <details open data-default-open>
+              <summary>Mesures ${code} (${items.length})</summary>
+              <ol></ol>
+            </details>
+          </div>`;
+        const ol=sec.querySelector('ol');
+        items.forEach(([ref,label])=>{
+          total++;
+          const li=document.createElement('li'); li.dataset.ref=ref; li.dataset.text=label; li.dataset.theme=code;
+          li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span>
+            <span class="yn">
+              <label><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label>
+              <label><input type="radio" name="ctrl-${ref}" value="non"> Non</label>
+            </span>`;
+          const saved=localStorage.getItem(LS_PREFIX+ref); if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; }
+          li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change',()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); }));
+          ol.appendChild(li);
+        });
+        main.insertBefore(sec, sources);
+      });
+      document.getElementById('g-total').textContent=total;
+    }
 
-    function updateStats(){ const s=computeStats(); document.getElementById('g-yes').textContent=s.global.yes; document.getElementById('g-no').textContent=s.global.no; document.getElementById('g-na').textContent=s.global.na; const pct=Math.round((s.global.yes/s.global.total)*100); document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`; try{ if(parent&&parent!==window){ parent.postMessage({type:'UCAP_SUMMARY', norm:'RGPD', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct }}, '*'); } }catch(e){} }
+    function computeStats(){
+      const perTheme={}; THEMES.forEach(([code,,items])=> perTheme[code]={yes:0,no:0,tot:items.length});
+      const details=[];
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref=li.dataset.ref, text=li.dataset.text, th=li.dataset.theme;
+        const val = li.querySelector('input:checked')?.value || 'na'; // ✅ bug corrigé
+        if(val==='oui') perTheme[th].yes++; else if(val==='non') perTheme[th].no++;
+        details.push({ref,text,theme:th,val});
+      });
+      const yes=Object.values(perTheme).reduce((a,g)=>a+g.yes,0);
+      const no =Object.values(perTheme).reduce((a,g)=>a+g.no,0);
+      const tot=Object.values(perTheme).reduce((a,g)=>a+g.tot,0);
+      const na=tot-yes-no;
+      return {perTheme, details, global:{yes,no,na,total:tot}};
+    }
 
-    function generateReport(){ const s=computeStats(); const d=new Date().toLocaleString('fr-FR'); const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref)); let html=`<!doctype html><html lang=fr><head><meta charset=utf-8><meta name=viewport content=width=device-width,initial-scale=1><title>Résultats — RGPD</title></head><body><h1>Résultats — RGPD</h1><small>Généré le ${d}</small><h2>Résumé global</h2><p>Total ${s.global.total} • Oui ${s.global.yes} • Non ${s.global.no} • NR ${s.global.na} • ${Math.round((s.global.yes/s.global.total)*100)}%</p></body></html>`; const w=open('','_blank'); w.document.write(html); w.document.close(); }
+    function updateStats(){
+      const s=computeStats();
+      document.getElementById('g-yes').textContent=s.global.yes;
+      document.getElementById('g-no').textContent =s.global.no;
+      document.getElementById('g-na').textContent =s.global.na;
+      const pct=Math.round((s.global.yes/s.global.total)*100);
+      document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
+      try{
+        if(parent && parent!==window){
+          parent.postMessage({type:'UCAP_SUMMARY', norm:'RGPD', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct }}, '*');
+        }
+      }catch(e){}
+    }
 
-    function exportCSV(){ const {details}=computeStats(); const rows=[["Ref","Thème","Intitulé","Réponse"]]; details.forEach(d=> rows.push([d.ref,d.theme,d.text,d.val])); const csv=rows.map(r=> r.map(x=>'"'+x.replace(/"/g,'""')+'"').join(';')).join('\n'); const b=new Blob([csv],{type:'text/csv'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='etat_rgpd.csv'; a.click(); URL.revokeObjectURL(u); }
+    // --- Rapport PDF : auto-impression + styles A4
+    function generateReport(){
+      const s=computeStats(), now=new Date();
+      const d=now.toLocaleString('fr-FR');
+      const fileSafeDate = now.toISOString().slice(0,19).replace(/[:T]/g,'-');
+      const reportTitle = `CyberAudit - Résultats RGPD - ${fileSafeDate}`;
 
-    function resetAll(){ if(!confirm('Supprimer toutes les réponses ?')) return; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref; localStorage.removeItem(LS_PREFIX+ref); li.querySelectorAll('input[type=radio]').forEach(i=> i.checked=false); }); updateStats(); }
+      const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
 
-    (function(){ renderThemes(); updateStats(); document.getElementById('btn-report').addEventListener('click', generateReport); document.getElementById('btn-csv').addEventListener('click', exportCSV); document.getElementById('btn-reset').addEventListener('click', resetAll); document.getElementById('y').textContent=new Date().getFullYear(); })();
+      let html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+      html+=`<title>${reportTitle}</title>`;
+      html+=`<style>
+        :root{--ink:#0f172a;--muted:#64748b;--band:#f3f4f6}
+        body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        h1{font-size:22px;margin:0 0 6px}
+        h2{margin:16px 0 8px}
+        h3{margin:12px 0 6px}
+        small{color:var(--muted)}
+        .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
+        table{border-collapse:collapse;width:100%;margin:8px 0}
+        th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
+        tr:nth-child(even){background:var(--band)}
+        .noprint{margin:6px 0 10px}
+        .page-break{break-after:page}
+        @page{size:A4;margin:14mm}
+        @media print {.noprint{display:none}}
+      </style></head><body>`;
+
+      html+=`<h1>Résultats — RGPD</h1>
+             <div class="noprint"><small>Généré le ${d}</small> — <button onclick="window.print()">Télécharger en PDF</button></div>`;
+
+      html+=`<h2>Résumé global</h2>
+             <table><tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr>
+             <tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr></table>`;
+
+      // Détail par thème
+      html+=`<h2>Détail par thème</h2>
+             <table><tr><th>Thème</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
+      THEMES.forEach(([code,title,items])=>{
+        const g=s.perTheme[code];
+        html+=`<tr><td>${code} — ${title}</td><td>${g.yes}</td><td>${g.no}</td><td>${g.tot-g.yes-g.no}</td><td>${g.tot}</td></tr>`;
+      });
+      html+='</table>';
+
+      // Non
+      html+=`<div class="page-break"></div><h2>Mesures “Non” (à traiter)</h2>`;
+      THEMES.forEach(([code,title])=>{
+        const arr=list(s.details.filter(x=>x.theme===code),'non');
+        html+=`<h3>${code} — ${title} — <span class="badge">${arr.length}</span></h3>`;
+        if(arr.length===0){ html+='<div><small>Aucun.</small></div>'; }
+        else{
+          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
+          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
+          html+='</table>';
+        }
+      });
+
+      // NA
+      html+=`<div class="page-break"></div><h2>Mesures “Non répondu” (à compléter)</h2>`;
+      THEMES.forEach(([code,title])=>{
+        const arr=list(s.details.filter(x=>x.theme===code),'na');
+        html+=`<h3>${code} — ${title} — <span class="badge">${arr.length}</span></h3>`;
+        if(arr.length===0){ html+='<div><small>Complet.</small></div>'; }
+        else{
+          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
+          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
+          html+='</table>';
+        }
+      });
+
+      // Auto-print + auto-close
+      html+=`<script>
+        document.title = ${JSON.stringify(reportTitle)};
+        window.addEventListener('load', () => { setTimeout(() => { try { window.print(); } catch(e) {} }, 250); });
+        window.addEventListener('afterprint', () => { try { window.close(); } catch(e) {} });
+      <\/script>`;
+
+      html+='</body></html>';
+
+      // Ouverture anticipée pour éviter les bloqueurs
+      const win = window.open('about:blank', '_blank', 'noopener,noreferrer');
+      if (!win) {
+        const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+        window.location.href = dataUrl;
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      try { win.focus(); } catch(e) {}
+    }
+
+    // --- CSV : BOM + Safari/iOS + révocation différée
+    function exportCSV(){
+      const {details}=computeStats();
+      const rows=[["Ref","Thème","Intitulé","Réponse"]];
+      details.forEach(d=> rows.push([d.ref,d.theme,d.text,d.val]));
+      const csvBody = rows.map(r => r.map(x => '"'+(x||'').replace(/"/g,'""')+'"').join(';')).join('\n');
+      const BOM = '\uFEFF';
+      const blob=new Blob([BOM + csvBody],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='etat_rgpd.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    }
+
+    function resetAll(){
+      if(!confirm('Supprimer toutes les réponses ?')) return;
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref=li.dataset.ref;
+        localStorage.removeItem(LS_PREFIX+ref);
+        li.querySelectorAll('input[type=radio]').forEach(i=> i.checked=false);
+      });
+      updateStats();
+    }
+
+    // Initialisation fiable
+    window.addEventListener('DOMContentLoaded', ()=>{
+      renderThemes();
+      updateStats();
+      document.getElementById('btn-report')?.addEventListener('click', generateReport);
+      document.getElementById('btn-csv')?.addEventListener('click', exportCSV);
+      document.getElementById('btn-reset')?.addEventListener('click', resetAll);
+      document.getElementById('y').textContent=new Date().getFullYear();
+    });
   </script>
 </body>
 </html>
