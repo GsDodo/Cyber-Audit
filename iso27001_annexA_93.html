@@ -47,7 +47,7 @@
         <h1>ISO/IEC 27001:2022 – Annexe A : 93 contrôles (évaluation Oui/Non)</h1>
         <p class="muted">Les intitulés sont synthétiques (pédagogie). Les choix sont sauvegardés localement.</p>
       </div>
-      <div class="stat">Global : <b id="g-yes">0</b> Oui • <b id="g-no">0</b> Non • <b id="g-na">93</b> Non répondu</div>
+      <div class="stat">Global&nbsp;: <b id="g-yes">0</b> Oui • <b id="g-no">0</b> Non • <b id="g-na">93</b> Non répondu</div>
     </div>
   </header>
 
@@ -66,7 +66,7 @@
 
   <footer>
     <div class="wrap foot">
-      <div>© <span id="y"></span> Évaluation ISO/IEC 27001:2022 (Annexe A)</div>
+      <div>© <span id="y"></span> Évaluation ISO/IEC&nbsp;27001:2022 (Annexe A)</div>
       <div id="score"></div>
     </div>
   </footer>
@@ -119,11 +119,12 @@
       try{ if(window.parent && window.parent!==window){ window.parent.postMessage({type:'UCAP_SUMMARY', norm:'ISO27001', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct:pct }}, '*'); } }catch(e){}
     }
 
+    // --- Rapport : compatible anti‑popup + fallback
     function generateReport(){
       const s=computeStats(), d=new Date().toLocaleString('fr-FR');
       const cats=[{id:'org',label:'Organisationnels (5.x)'},{id:'people',label:'Personnes (6.x)'},{id:'physical',label:'Physiques (7.x)'},{id:'tech',label:'Technologiques (8.x)'}];
       const by=(id)=> s.details.filter(x=>x.cat===id); const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
-      let html=`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Résultats — ISO/IEC 27001:2022 (Annexe A)</title><style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:#0f172a}h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px} h3{margin:12px 0 6px}.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}small{color:#64748b}@media print{ .noprint{display:none} }</style></head><body>`;
+      let html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Résultats — ISO/IEC 27001:2022 (Annexe A)</title><style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:#0f172a}h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px} h3{margin:12px 0 6px}.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}small{color:#64748b}@media print{ .noprint{display:none} }</style></head><body>';
       html+=`<h1>Résultats — ISO/IEC 27001:2022 (Annexe A)</h1><div class="noprint"><small>Généré le ${d}</small></div>`;
       html+=`<h2>Résumé global</h2><table><tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr><tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr></table>`;
       html+=`<h2>Détail par catégorie</h2><table><tr><th>Catégorie</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
@@ -136,18 +137,56 @@
       html+=`<h2>Contrôles “Non répondu” (à compléter)</h2>`;
       cats.forEach(c=>{ const arr=list(by(c.id),'na'); html+=`<h3>${c.label} — <span class="badge">${arr.length}</span></h3>`; if(arr.length===0){ html+='<div><small>Complet.</small></div>'; } else { html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; } });
       html+='</body></html>';
-      const w=window.open('','_blank'); w.document.write(html); w.document.close(); w.focus();
+
+      const win = window.open('about:blank', '_blank', 'noopener,noreferrer'); // ouverture anticipée
+      if (!win) {
+        // Fallback si popup bloqué
+        const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+        window.location.href = dataUrl;
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      try { win.focus(); } catch(e) {}
     }
 
+    // --- CSV : BOM + Safari/iOS + révoquer après délai
     function exportCSV(){
-      const {details}=computeStats(); const rows=[["Ref","Catégorie","Intitulé","Réponse"]]; const map={org:'Organisationnels (5.x)',people:'Personnes (6.x)',physical:'Physiques (7.x)',tech:'Technologiques (8.x)'};
-      details.forEach(d=> rows.push([d.ref, map[d.cat], d.text, d.val])); const csv=rows.map(r=> r.map(x=> '"'+(x||'').replace(/"/g,'""')+'"').join(';')).join('\n');
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='etat_iso27001_annexA.csv'; a.click(); URL.revokeObjectURL(url);
+      const {details}=computeStats(); const rows=[["Ref","Catégorie","Intitulé","Réponse"]];
+      const map={org:'Organisationnels (5.x)',people:'Personnes (6.x)',physical:'Physiques (7.x)',tech:'Technologiques (8.x)'};
+      details.forEach(d=> rows.push([d.ref, map[d.cat], d.text, d.val]));
+      const csvBody = rows.map(r => r.map(x => '"'+(x||'').replace(/"/g,'""')+'"').join(';')).join('\n');
+      const BOM = '\uFEFF'; // UTF‑8 BOM pour Excel/Windows
+      const blob=new Blob([BOM + csvBody],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='etat_iso27001_annexA.csv';
+      document.body.appendChild(a); // Safari/iOS
+      a.click();
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 2000); // révocation différée
     }
 
-    function resetAll(){ if(!confirm('Supprimer toutes les réponses enregistrées ?')) return; document.querySelectorAll('.controls li').forEach(li=>{ const ref=li.dataset.ref; localStorage.removeItem(LS_PREFIX+ref); li.querySelectorAll('input[type="radio"]').forEach(i=> i.checked=false); }); updateStats(); }
+    function resetAll(){
+      if(!confirm('Supprimer toutes les réponses enregistrées ?')) return;
+      document.querySelectorAll('.controls li').forEach(li=>{
+        const ref=li.dataset.ref;
+        localStorage.removeItem(LS_PREFIX+ref);
+        li.querySelectorAll('input[type="radio"]').forEach(i=>{ i.checked=false; });
+      });
+      updateStats();
+    }
 
-    (function(){ renderGroups(); updateStats(); document.getElementById('btn-report').addEventListener('click', generateReport); document.getElementById('btn-csv').addEventListener('click', exportCSV); document.getElementById('btn-reset').addEventListener('click', resetAll); document.getElementById('y').textContent=new Date().getFullYear(); })();
+    // Initialisation fiable (même en iframe)
+    window.addEventListener('DOMContentLoaded', () => {
+      renderGroups();
+      updateStats();
+      document.getElementById('btn-report')?.addEventListener('click', generateReport);
+      document.getElementById('btn-csv')?.addEventListener('click', exportCSV);
+      document.getElementById('btn-reset')?.addEventListener('click', resetAll);
+      document.getElementById('y').textContent=new Date().getFullYear();
+    });
   </script>
 </body>
 </html>
