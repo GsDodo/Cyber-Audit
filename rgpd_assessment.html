@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RGPD — Évaluation opérationnelle : Oui/Non + Rapport</title>
   <meta name="description" content="Auto-évaluation RGPD : mesures opérationnelles par thèmes, cases Oui/Non, sauvegarde locale, résultats imprimables, export CSV.">
+  <!-- PATCH mobile -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0b1220">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
     :root{ --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8; --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24); }
     [data-theme="light"]{ --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569; --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08); }
@@ -33,11 +37,35 @@
     .ref{min-width:70px;color:var(--muted);font-weight:700}
     .label{flex:1}
     .yn{display:inline-flex;gap:10px;align-items:center}
-    .yn label{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
+    .yn label{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
     .yn input{accent-color:var(--brand)}
     footer{border-top:1px solid var(--line);margin-top:24px}
     .foot{padding:12px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
     @media print {.toolbar{display:none} details{open:true}}
+
+    /* === PATCH mobile CSS === */
+    :root{ --radius:14px; }
+    body { -webkit-text-size-adjust:100%; }
+    :focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+    .btn, .toolbar .btn, .yn label { min-height:44px; }
+    h1{ font-size:clamp(20px,2.9vw,22px); }
+    .muted{ font-size:clamp(13px,3vw,13px); }
+    @media (max-width:768px){
+      .wrap{padding:0 16px}
+      .controls ol{ margin-left:20px }
+      .group{ border-radius:var(--radius) }
+    }
+    @media (max-width:480px){
+      .bar{ flex-direction:column; gap:10px; align-items:flex-start }
+      .yn label{ padding:8px 12px }
+    }
+    header .bar, footer .foot{
+      padding-left:max(20px,env(safe-area-inset-left));
+      padding-right:max(20px,env(safe-area-inset-right));
+    }
+    @media (prefers-reduced-motion:reduce){
+      *{ scroll-behavior:auto }
+    }
   </style>
 </head>
 <body>
@@ -74,7 +102,6 @@
 
   <script>
     const LS_PREFIX = 'rgpd-ctrl-';
-
     const THEMES = [["GOV","Gouvernance & DPO",[["GOV.1","Désignation DPO & missions"],["GOV.2","Politique vie privée & programme"],["GOV.3","Privacy by design/default"],["GOV.4","Comité & reporting"]]],
       ["BASE","Bases légales & finalités",[["BASE.1","Finalités légitimes & déterminées"],["BASE.2","Base légale par traitement"],["BASE.3","Intérêts légitimes testés"]]],
       ["RIGHTS","Droits des personnes",[["RIGHTS.1","Process DSAR (SLA)"],["RIGHTS.2","Vérif identité & journal"],["RIGHTS.3","Information claire des droits"]]],
@@ -91,9 +118,7 @@
     ];
 
     function renderThemes(){
-      const main=document.querySelector('main.wrap');
-      const sources=document.querySelector('section.group:last-of-type');
-      let total=0;
+      const main=document.querySelector('main.wrap'); const sources=document.querySelector('section.group:last-of-type'); let total=0;
       THEMES.forEach(([code,title,items])=>{
         const sec=document.createElement('section'); sec.className='group'; sec.id=code.toLowerCase();
         sec.innerHTML=`<header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header>
@@ -126,7 +151,7 @@
       const details=[];
       document.querySelectorAll('.controls li').forEach(li=>{
         const ref=li.dataset.ref, text=li.dataset.text, th=li.dataset.theme;
-        const val = li.querySelector('input:checked')?.value || 'na'; // ✅ bug corrigé
+        const val = li.querySelector('input:checked')?.value || 'na'; // bug corrigé
         if(val==='oui') perTheme[th].yes++; else if(val==='non') perTheme[th].no++;
         details.push({ref,text,theme:th,val});
       });
@@ -151,13 +176,12 @@
       }catch(e){}
     }
 
-    // --- Rapport PDF : auto-impression + styles A4
+    // Rapport PDF (auto-print) — déjà robuste
     function generateReport(){
       const s=computeStats(), now=new Date();
       const d=now.toLocaleString('fr-FR');
       const fileSafeDate = now.toISOString().slice(0,19).replace(/[:T]/g,'-');
       const reportTitle = `CyberAudit - Résultats RGPD - ${fileSafeDate}`;
-
       const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
 
       let html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
@@ -165,18 +189,11 @@
       html+=`<style>
         :root{--ink:#0f172a;--muted:#64748b;--band:#f3f4f6}
         body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-        h1{font-size:22px;margin:0 0 6px}
-        h2{margin:16px 0 8px}
-        h3{margin:12px 0 6px}
-        small{color:var(--muted)}
-        .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
-        table{border-collapse:collapse;width:100%;margin:8px 0}
-        th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
-        tr:nth-child(even){background:var(--band)}
-        .noprint{margin:6px 0 10px}
-        .page-break{break-after:page}
-        @page{size:A4;margin:14mm}
-        @media print {.noprint{display:none}}
+        h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px} h3{margin:12px 0 6px}
+        small{color:var(--muted)} .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
+        table{border-collapse:collapse;width:100%;margin:8px 0} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
+        tr:nth-child(even){background:var(--band)} .noprint{margin:6px 0 10px} .page-break{break-after:page}
+        @page{size:A4;margin:14mm} @media print {.noprint{display:none}}
       </style></head><body>`;
 
       html+=`<h1>Résultats — RGPD</h1>
@@ -186,7 +203,6 @@
              <table><tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr>
              <tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr></table>`;
 
-      // Détail par thème
       html+=`<h2>Détail par thème</h2>
              <table><tr><th>Thème</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
       THEMES.forEach(([code,title,items])=>{
@@ -195,55 +211,34 @@
       });
       html+='</table>';
 
-      // Non
       html+=`<div class="page-break"></div><h2>Mesures “Non” (à traiter)</h2>`;
       THEMES.forEach(([code,title])=>{
         const arr=list(s.details.filter(x=>x.theme===code),'non');
         html+=`<h3>${code} — ${title} — <span class="badge">${arr.length}</span></h3>`;
         if(arr.length===0){ html+='<div><small>Aucun.</small></div>'; }
-        else{
-          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
-          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
-          html+='</table>';
-        }
+        else{ html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; }
       });
 
-      // NA
       html+=`<div class="page-break"></div><h2>Mesures “Non répondu” (à compléter)</h2>`;
       THEMES.forEach(([code,title])=>{
         const arr=list(s.details.filter(x=>x.theme===code),'na');
         html+=`<h3>${code} — ${title} — <span class="badge">${arr.length}</span></h3>`;
         if(arr.length===0){ html+='<div><small>Complet.</small></div>'; }
-        else{
-          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
-          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
-          html+='</table>';
-        }
+        else{ html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; }
       });
 
-      // Auto-print + auto-close
       html+=`<script>
         document.title = ${JSON.stringify(reportTitle)};
-        window.addEventListener('load', () => { setTimeout(() => { try { window.print(); } catch(e) {} }, 250); });
-        window.addEventListener('afterprint', () => { try { window.close(); } catch(e) {} });
-      <\/script>`;
+        window.addEventListener('load', () => { setTimeout(() => { try{ window.print(); }catch(e){} }, 250); });
+        window.addEventListener('afterprint', () => { try{ window.close(); }catch(e){} });
+      <\/script></body></html>`;
 
-      html+='</body></html>';
-
-      // Ouverture anticipée pour éviter les bloqueurs
-      const win = window.open('about:blank', '_blank', 'noopener,noreferrer');
-      if (!win) {
-        const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-        window.location.href = dataUrl;
-        return;
-      }
-      win.document.open();
-      win.document.write(html);
-      win.document.close();
-      try { win.focus(); } catch(e) {}
+      const win = window.open('about:blank','_blank','noopener,noreferrer');
+      if (!win) { const dataUrl='data:text/html;charset=utf-8,'+encodeURIComponent(html); window.location.href=dataUrl; return; }
+      win.document.open(); win.document.write(html); win.document.close(); try{ win.focus(); }catch(e){}
     }
 
-    // --- CSV : BOM + Safari/iOS + révocation différée
+    // CSV (BOM + Safari/iOS)
     function exportCSV(){
       const {details}=computeStats();
       const rows=[["Ref","Thème","Intitulé","Réponse"]];
@@ -252,11 +247,8 @@
       const BOM = '\uFEFF';
       const blob=new Blob([BOM + csvBody],{type:'text/csv;charset=utf-8;'});
       const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download='etat_rgpd.csv';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      const a=document.createElement('a'); a.href=url; a.download='etat_rgpd.csv';
+      document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=> URL.revokeObjectURL(url), 2000);
     }
 
@@ -270,7 +262,7 @@
       updateStats();
     }
 
-    // Initialisation fiable
+    // Init fiable
     window.addEventListener('DOMContentLoaded', ()=>{
       renderThemes();
       updateStats();
