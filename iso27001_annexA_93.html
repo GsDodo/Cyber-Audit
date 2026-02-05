@@ -2,33 +2,42 @@
 <html lang="fr" data-theme="light">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- ✅ Mobile: viewport fit pour la safe-area iOS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>ISO/IEC 27001:2022 — Annexe A : 93 contrôles (Oui/Non + Résultats)</title>
   <meta name="description" content="93 mesures ISO/IEC 27001:2022 (Annexe A) par catégorie, cases Oui/Non, sauvegarde locale, page de résultats et export CSV.">
-  <!-- Patch mobile -->
+
+  <!-- ✅ PATCH mobile (meta) -->
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
   <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0b1220">
   <meta name="apple-mobile-web-app-capable" content="yes">
+
   <style>
     :root{ --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8; --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24); }
     [data-theme="light"]{ --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569; --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08); }
+
     *{box-sizing:border-box}
     body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
     a{color:var(--brand);text-decoration:none}
     .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
     header{border-bottom:1px solid var(--line);background:linear-gradient(180deg, rgba(16,24,40,.25), rgba(16,24,40,0))}
     .bar{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:16px 0}
     h1{margin:0;font-size:22px}
     .muted{color:var(--muted);font-size:13px;margin:4px 0 0 0}
+
     .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}
     .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;box-shadow:var(--shadow);font-weight:600}
     .btn--brand{background:var(--brand);border-color:transparent;color:#fff}
+
     .stat{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--panel);font-size:13px;color:var(--muted)}
     .stat b{color:var(--text)}
+
     .group{border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);margin:16px 0}
     .group header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
     .group h2{margin:0;font-size:18px}
     .tag{display:inline-block;border-radius:999px;padding:4px 10px;background:rgba(91,141,239,.12);color:var(--brand);font-size:12px;margin-left:10px}
+
     .controls{padding:6px 16px 16px}
     .controls details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}
     .controls summary{cursor:pointer;padding:10px 12px;font-weight:600}
@@ -41,28 +50,51 @@
     .yn input{accent-color:var(--brand)}
     footer{border-top:1px solid var(--line);margin-top:24px}
     .foot{padding:12px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
     @media print {.toolbar{display:none} details{open:true}}
 
-    /* === Patch mobile (aucune logique JS modifiée) === */
-    :root{ --radius:14px; }
+    /* === PATCH mobile CSS — AUCUNE FONCTION JS MODIFIÉE === */
+    :root{ --radius:14px; --tap:44px; }
     body { -webkit-text-size-adjust:100%; }
     :focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
-    .btn, .toolbar .btn, .yn label { min-height:44px; }
-    h1{ font-size:clamp(20px,2.9vw,22px); }
-    .muted{ font-size:clamp(13px,3vw,13px); }
-    @media (max-width:768px){
-      .wrap{padding:0 16px}
-      .controls ol{ margin-left:20px }
+
+    /* Confort tactile et lisibilité */
+    .btn, .toolbar .btn, .yn label { min-height: var(--tap); }
+    .yn input { width:18px; height:18px; }                 /* tailles radio lisibles */
+    .yn label { padding:8px 12px; }                        /* coussin tactile */
+    .controls li { grid-template-columns:minmax(52px,auto) 1fr auto; } /* mieux gérer le ref */
+
+    /* Typo fluide */
+    h1{ font-size: clamp(20px, 2.9vw, 22px); }
+    .muted{ font-size: clamp(13px, 3vw, 13px); }
+
+    /* iOS : retirer le flash bleu au toucher */
+    a, button, label { -webkit-tap-highlight-color: rgba(0,0,0,0); }
+
+    /* Tablette et < 1100px : marges plus souples */
+    @media (max-width: 768px){
+      .wrap{ padding:0 16px }
       .group{ border-radius:var(--radius) }
+      .controls ol{ margin-left:20px }
     }
-    @media (max-width:480px){
+
+    /* Téléphones étroits */
+    @media (max-width: 480px){
       .bar{ flex-direction:column; gap:10px; align-items:flex-start }
-      .yn label{ padding:8px 12px }
+      .toolbar .btn { flex:1 1 auto; }                     /* peut s'étaler si besoin */
+      .controls summary { padding:12px 12px; }
+      .controls li { gap:12px; }
+      .label { line-height:1.5; }                          /* multi-ligne confortable */
+      .yn { gap:12px; }
     }
+
+    /* Safe-area iOS (notch) */
     header .bar, footer .foot{
       padding-left:max(20px, env(safe-area-inset-left));
       padding-right:max(20px, env(safe-area-inset-right));
     }
+
+    /* Accessibilité motion réduite */
     @media (prefers-reduced-motion:reduce){
       *{ scroll-behavior:auto }
     }
@@ -82,15 +114,13 @@
   <main class="wrap">
     <div class="toolbar">
       <button id="btn-report" class="btn btn--brand">🧾 Générer la page de résultats</button>
-      <button id="btn-csv"   class="btn">⬇️ Exporter CSV</button>
+      <button id="btn-csv" class="btn">⬇️ Exporter CSV</button>
       <button id="btn-reset" class="btn">♻️ Réinitialiser</button>
     </div>
 
     <section class="group">
       <header><h2>Infos</h2></header>
-      <div class="controls">
-        <div class="muted">Cette page couvre les 4 catégories : 5.x Organisationnels (37), 6.x Personnes (8), 7.x Physiques (14), 8.x Technologiques (34).</div>
-      </div>
+      <div class="controls"><div class="muted">Cette page couvre les 4 catégories : 5.x Organisationnels (37), 6.x Personnes (8), 7.x Physiques (14), 8.x Technologiques (34).</div></div>
     </section>
   </main>
 
@@ -101,18 +131,12 @@
     </div>
   </footer>
 
+  <!-- ✅ TOUTES TES FONCTIONS RESTENT STRICTEMENT IDENTIQUES -->
   <script>
-    /* ==========
-       Données
-       ========== */
     const LS_PREFIX = 'iso27001-2022-ctrl-';
-
     const ORG = [['5.1','Politiques de sécurité de l’information'],['5.2','Rôles et responsabilités SSI'],['5.3','Ségrégation des tâches'],['5.4','Responsabilités de la direction'],['5.5','Contacts avec les autorités'],['5.6','Contacts avec les groupes d’intérêt'],['5.7','Renseignement sur les menaces'],['5.8','SSI dans la gestion de projet'],['5.9','Inventaire des informations et actifs associés'],['5.10','Usage acceptable de l’information et des actifs'],['5.11','Restitution des actifs'],['5.12','Classification de l’information'],['5.13','Étiquetage de l’information'],['5.14','Transfert d’informations'],['5.15','Contrôle d’accès (principes)'],['5.16','Gestion des identités'],['5.17','Informations d’authentification'],['5.18','Droits d’accès'],['5.19','SSI dans les relations fournisseurs'],['5.20','SSI dans les contrats fournisseurs'],['5.21','SSI dans la chaîne d’approvisionnement TIC'],['5.22','Suivi/revue/changements des services fournisseurs'],['5.23','SSI pour l’usage des services cloud'],['5.24','Planification & préparation (gestion des incidents)'],['5.25','Évaluation & décision sur les événements'],['5.26','Réponse aux incidents'],['5.27','Retour d’expérience après incident'],['5.28','Collecte de preuves'],['5.29','SSI lors des perturbations'],['5.30','Préparation TIC à la continuité d’activité'],['5.31','Exigences légales/réglementaires/contractuelles'],['5.32','Droits de propriété intellectuelle'],['5.33','Protection des enregistrements'],['5.34','Vie privée & PII'],['5.35','Revue indépendante de la SSI'],['5.36','Conformité aux politiques/règles/standards'],['5.37','Procédures opératoires documentées']];
-
     const PEOPLE = [['6.1','Vérifications pré‑emploi (screening)'],['6.2','Conditions d’emploi'],['6.3','Sensibilisation / éducation / formation SSI'],['6.4','Processus disciplinaire'],['6.5','Responsabilités post‑emploi / changement'],['6.6','Confidentialité (NDA)'],['6.7','Travail à distance'],['6.8','Signalement des événements SSI']];
-
     const PHYS = [['7.1','Périmètres de sécurité physique'],['7.2','Contrôles d’accès physique'],['7.3','Sécurisation des bureaux/salles/locaux'],['7.4','Surveillance de la sécurité physique'],['7.5','Menaces physiques & environnementales'],['7.6','Travail en zones sécurisées'],['7.7','Bureau clair / écran clair'],['7.8','Emplacement & protection des équipements'],['7.9','Sécurité des actifs hors site'],['7.10','Supports de stockage'],['7.11','Services utilitaires (énergie, clim, etc.)'],['7.12','Sécurité du câblage'],['7.13','Maintenance des équipements'],['7.14','Élimination / réutilisation des équipements']];
-
     const TECH = [['8.1','Dispositifs utilisateur (endpoints)'],['8.2','Sécurité des données en transmission'],['8.3','Filtrage du trafic réseau'],['8.4','Services réseau sécurisés'],['8.5','Sécurité des plateformes / environnements'],['8.6','Capacité & performance'],['8.7','Protection antimalware'],['8.8','Gestion des vulnérabilités (tech)'],['8.9','Gestion de la configuration'],['8.10','Suppression des informations'],['8.11','Masquage des données'],['8.12','Prévention de fuites (DLP)'],['8.13','Sauvegardes'],['8.14','Journalisation'],['8.15','Synchronisation de l’horloge'],['8.16','Activités de surveillance (monitoring)'],['8.17','Détection de maliciels'],['8.18','Gestion des vulnérabilités (process)'],['8.19','Authentification sécurisée'],['8.20','Gestion des infos d’authentification'],['8.21','Restrictions utilitaires systèmes'],['8.22','Sécurité des environnements de dev'],['8.23','Filtrage Web'],['8.24','Code mobile / macros'],['8.25','Vulnérabilités applicatives'],['8.26','Sécurité du développement (SDLC)'],['8.27','Tests de sécurité applicative'],['8.28','Codage sécurisé'],['8.29','Services infogérés/externes — sécurité'],['8.30','Contrôle des déploiements & changements'],['8.31','Sécurité des API & interfaces'],['8.32','Durcissement plateformes/systèmes'],['8.33','Résilience & capacité (tech)'],['8.34','Protection anti‑DoS']];
 
     const GROUPS = [
@@ -122,55 +146,30 @@
       {id:'tech', label:'Technologiques (8.x)', total:34, data:TECH},
     ];
 
-    /* ==========
-       Rendu
-       ========== */
     function renderGroups(){
-      const main=document.querySelector('main.wrap');
-      const sources=document.querySelector('section.group:last-of-type');
+      const main=document.querySelector('main.wrap'); const sources=document.querySelector('section.group:last-of-type');
       GROUPS.forEach(g=>{
         const sec=document.createElement('section'); sec.className='group'; sec.id=g.id;
-        sec.innerHTML=`<header><h2>${g.label} <span class="tag">${g.total}</span></h2></header>
-          <div class="controls" data-group="${g.id}">
-            <details open data-default-open>
-              <summary>Contrôles ${g.label.split('(')[0].trim()} (${g.total})</summary>
-              <ol></ol>
-            </details>
-          </div>`;
+        sec.innerHTML=`<header><h2>${g.label} <span class="tag">${g.total}</span></h2></header><div class="controls" data-group="${g.id}"><details open data-default-open><summary>Contrôles ${g.label.split('(')[0].trim()} (${g.total})</summary><ol></ol></details></div>`;
         const ol=sec.querySelector('ol');
         g.data.forEach(([ref,label])=>{
           const li=document.createElement('li'); li.dataset.ref=ref; li.dataset.text=label; li.dataset.group=g.id;
-          li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span>
-            <span class="yn">
-              <label title="Oui"><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label>
-              <label title="Non"><input type="radio" name="ctrl-${ref}" value="non"> Non</label>
-            </span>`;
-          // Restaure l'état
-          const saved=localStorage.getItem(LS_PREFIX+ref);
-          if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; }
-          // MAJ immédiate du %, + sauvegarde
-          li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=>{
-            inp.addEventListener('change', ()=>{
-              localStorage.setItem(LS_PREFIX+ref, inp.value);
-              updateStats(); // ← met à jour la stat en direct
-            });
-          });
+          li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span><span class="yn"><label title="Oui"><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label><label title="Non"><input type="radio" name="ctrl-${ref}" value="non"> Non</label></span>`;
+          const saved=localStorage.getItem(LS_PREFIX+ref); if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; }
+          li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change', ()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); }));
           ol.appendChild(li);
         });
         main.insertBefore(sec, sources);
       });
     }
 
-    /* ==========
-       Calcul stats
-       ========== */
     function computeStats(){
       const groups={ org:{yes:0,no:0,tot:37}, people:{yes:0,no:0,tot:8}, physical:{yes:0,no:0,tot:14}, tech:{yes:0,no:0,tot:34} };
       const details=[];
       document.querySelectorAll('.controls').forEach(sec=>{
         const cat=sec.dataset.group;
         sec.querySelectorAll('li').forEach(li=>{
-          const ref=li.dataset.ref, text=li.dataset.text;
+          const ref=li.dataset.ref, text=li.dataset.text; 
           const val = li.querySelector('input:checked')?.value || 'na';
           if(val==='oui') groups[cat].yes++; else if(val==='non') groups[cat].no++;
           details.push({ref,text,cat,val});
@@ -182,28 +181,21 @@
       return {groups, details, global:{yes,no,na,total}};
     }
 
-    /* ==========
-       MAJ affichage + message parent (index)
-       ========== */
     function updateStats(){
       const s=computeStats();
-      document.getElementById('g-yes').textContent=s.global.yes;
-      document.getElementById('g-no').textContent =s.global.no;
+      document.getElementById('g-yes').textContent=s.global.yes; 
+      document.getElementById('g-no').textContent =s.global.no; 
       document.getElementById('g-na').textContent =s.global.na;
-      const pct=Math.round((s.global.yes/s.global.total)*100);
+      const pct=Math.round((s.global.yes/s.global.total)*100); 
       document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
-      // informe la page index (jauges onglets)
       try{
         if(window.parent && window.parent!==window){
-          window.parent.postMessage({type:'UCAP_SUMMARY', norm:'ISO27001',
-            data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct:pct }}, '*');
+          window.parent.postMessage({type:'UCAP_SUMMARY', norm:'ISO27001', data:{ yes:s.global.yes, no:s.global.no, na:s.global.na, total:s.global.total, pct:pct }}, '*');
         }
       }catch(e){}
     }
 
-    /* ==========
-       Rapport (PDF) — inchangé dans la logique
-       ========== */
+    // Rapport (PDF) — déjà robuste
     function generateReport(){
       const s=computeStats(), now=new Date();
       const d=now.toLocaleString('fr-FR');
@@ -267,9 +259,7 @@
       win.document.open(); win.document.write(html); win.document.close(); try{ win.focus(); }catch(e){}
     }
 
-    /* ==========
-       Export CSV (BOM + Safari/iOS + revoke différée)
-       ========== */
+    // CSV (BOM + Safari/iOS)
     function exportCSV(){
       const {details}=computeStats();
       const rows=[["Ref","Catégorie","Intitulé","Réponse"]];
@@ -279,17 +269,11 @@
       const BOM = '\uFEFF';
       const blob=new Blob([BOM + csvBody],{type:'text/csv;charset=utf-8;'});
       const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download='etat_iso27001_annexA.csv';
-      document.body.appendChild(a); // Safari/iOS
-      a.click();
-      a.remove();
+      const a=document.createElement('a'); a.href=url; a.download='etat_iso27001_annexA.csv';
+      document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=> URL.revokeObjectURL(url), 2000);
     }
 
-    /* ==========
-       Reset (efface LS + décoche + MAJ %)
-       ========== */
     function resetAll(){
       if(!confirm('Supprimer toutes les réponses enregistrées ?')) return;
       document.querySelectorAll('.controls li').forEach(li=>{
@@ -297,15 +281,13 @@
         localStorage.removeItem(LS_PREFIX+ref);
         li.querySelectorAll('input[type="radio"]').forEach(i=>{ i.checked=false; });
       });
-      updateStats(); // ← indispensable pour remettre les compteurs/pourcentage à jour
+      updateStats();
     }
 
-    /* ==========
-       Init
-       ========== */
+    // Init fiable (mobile/iframe)
     window.addEventListener('DOMContentLoaded', () => {
       renderGroups();
-      updateStats(); // calcule l’état initial (si LS déjà rempli)
+      updateStats();
       document.getElementById('btn-report')?.addEventListener('click', generateReport);
       document.getElementById('btn-csv')?.addEventListener('click', exportCSV);
       document.getElementById('btn-reset')?.addEventListener('click', resetAll);
