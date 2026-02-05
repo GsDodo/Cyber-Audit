@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NIS2 — Évaluation des mesures (13 domaines) : Oui/Non + Rapport</title>
   <meta name="description" content="Évaluez la conformité NIS2 par domaines ENISA avec des cases Oui/Non, sauvegarde locale, page de résultats et export CSV/JSON.">
+  <!-- PATCH mobile -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0b1220">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
     :root{ --bg:#0b1220; --panel:#0f172a; --card:#0f172a; --text:#e2e8f0; --muted:#94a3b8; --brand:#5b8def; --accent:#22c55e; --warn:#f59e0b; --danger:#ef4444; --line:#1f2937; --shadow:0 10px 28px rgba(2,6,23,.24); }
     [data-theme="light"]{ --bg:#ffffff; --panel:#ffffff; --card:#ffffff; --text:#0f172a; --muted:#475569; --brand:#3b82f6; --accent:#059669; --warn:#d97706; --danger:#b91c1c; --line:#e5e7eb; --shadow:0 8px 20px rgba(15,23,42,.08); }
@@ -33,11 +37,35 @@
     .ref{min-width:70px;color:var(--muted);font-weight:700}
     .label{flex:1}
     .yn{display:inline-flex;gap:10px;align-items:center}
-    .yn label{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
+    .yn label{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--panel);font-size:13px}
     .yn input{accent-color:var(--brand)}
     footer{border-top:1px solid var(--line);margin-top:24px}
     .foot{padding:12px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
     @media print {.toolbar{display:none} details{open:true}}
+
+    /* === PATCH mobile CSS === */
+    :root{ --radius:14px; }
+    body { -webkit-text-size-adjust:100%; }
+    :focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+    .btn, .toolbar .btn, .yn label { min-height:44px; }
+    h1{ font-size:clamp(20px,2.9vw,22px); }
+    .muted{ font-size:clamp(13px,3vw,13px); }
+    @media (max-width:768px){
+      .wrap{padding:0 16px}
+      .controls ol{ margin-left:20px }
+      .group{ border-radius:var(--radius) }
+    }
+    @media (max-width:480px){
+      .bar{ flex-direction:column; gap:10px; align-items:flex-start }
+      .yn label{ padding:8px 12px }
+    }
+    header .bar, footer .foot{
+      padding-left:max(20px,env(safe-area-inset-left));
+      padding-right:max(20px,env(safe-area-inset-right));
+    }
+    @media (prefers-reduced-motion:reduce){
+      *{ scroll-behavior:auto }
+    }
   </style>
 </head>
 <body>
@@ -85,24 +113,30 @@
       ["D10","Ressources humaines & sécurité",[["D10.1","Screening adapté"],["D10.2","Clauses SSI & NDA"],["D10.3","Onboarding/offboarding (droits/équipements)"],["D10.4","Rôles cyber dans fiches de poste"]]],
       ["D11","Contrôle d’accès",[["D11.1","Moindre privilège & séparation des rôles"],["D11.2","MFA/CA pour distants & privilèges"],["D11.3","Revue périodique des droits & traçabilité"],["D11.4","PAM/coffre-fort à secrets"]]],
       ["D12","Gestion des actifs",[["D12.1","Inventaire matériel/logiciel & owner"],["D12.2","Classification & étiquetage info"],["D12.3","Cycle de vie (acquisition/transfert/retrait)"],["D12.4","Médias amovibles : traçabilité & sécurité"]]],
-      ["D13","Sécurité environnementale & physique",[["D13.1","Périmètres & contrôles d’accès physiques"],["D13.2","Protection environnementale (énergie/clim/incendie)"],["D13.3","Surveillance (CCTV, alarmes), zones sécurisées"],["D13.4","Élimination/recyclage sécurisé (supports/équipements)"]]]];
+      ["D13","Sécurité environnementale & physique",[["D13.1","Périmètres & contrôles d’accès physiques"],["D13.2","Protection environnementale (énergie/clim/incendie)"],["D13.3","Surveillance (CCTV, alarmes), zones sécurisées"],["D13.4","Élimination/recyclage sécurisé (supports/équipements)"]]]
+    ];
 
     function renderDomains(){
       const main=document.querySelector('main.wrap'); const sources=document.querySelector('section.group:last-of-type'); let total=0;
       DOMAINS.forEach(([code,title,items])=>{
         const sec=document.createElement('section'); sec.className='group'; sec.id=code.toLowerCase();
         sec.innerHTML=`<header><h2>${code} — ${title} <span class="tag">${items.length}</span></h2></header>
-          <div class="controls" data-domain="${code}"><details open data-default-open>
-          <summary>Mesures ${code} (${items.length})</summary><ol></ol></details></div>`;
+          <div class="controls" data-domain="${code}">
+            <details open data-default-open>
+              <summary>Mesures ${code} (${items.length})</summary>
+              <ol></ol>
+            </details>
+          </div>`;
         const ol=sec.querySelector('ol');
         items.forEach(([ref,label])=>{
           total++;
           const li=document.createElement('li'); li.dataset.ref=ref; li.dataset.text=label; li.dataset.domain=code;
-          li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span>
-            <span class="yn"><label title="Oui"><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label>
-            <label title="Non"><input type="radio" name="ctrl-${ref}" value="non"> Non</label></span>`;
+          li.innerHTML=`<span class="ref">${ref}</span><span class="label">${label}</span><span class="yn">
+              <label title="Oui"><input type="radio" name="ctrl-${ref}" value="oui"> Oui</label>
+              <label title="Non"><input type="radio" name="ctrl-${ref}" value="non"> Non</label>
+            </span>`;
           const saved=localStorage.getItem(LS_PREFIX+ref); if(saved){ const inp=li.querySelector(`input[value="${saved}"]`); if(inp) inp.checked=true; }
-          li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change', ()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); }));
+          li.querySelectorAll(`input[name="ctrl-${ref}"]`).forEach(inp=> inp.addEventListener('change',()=>{ localStorage.setItem(LS_PREFIX+ref, inp.value); updateStats(); }));
           ol.appendChild(li);
         });
         main.insertBefore(sec, sources);
@@ -115,7 +149,7 @@
       const details=[];
       document.querySelectorAll('.controls li').forEach(li=>{
         const ref=li.dataset.ref; const text=li.dataset.text; const dom=li.dataset.domain;
-        const val = li.querySelector('input:checked')?.value || 'na'; // ✅ bug corrigé
+        const val = li.querySelector('input:checked')?.value || 'na'; // bug corrigé
         if(val==='oui') perDomain[dom].yes++; else if(val==='non') perDomain[dom].no++;
         details.push({ref,text,domain:dom,val});
       });
@@ -129,8 +163,8 @@
     function updateStats(){
       const s=computeStats();
       document.getElementById('g-yes').textContent=s.global.yes;
-      document.getElementById('g-no').textContent =s.global.no;
-      document.getElementById('g-na').textContent =s.global.na;
+      document.getElementById('g-no').textContent=s.global.no;
+      document.getElementById('g-na').textContent=s.global.na;
       const pct=Math.round((s.global.yes/s.global.total)*100);
       document.getElementById('score').textContent=`Conformité (Oui) : ${pct}% (${s.global.yes}/${s.global.total})`;
       try{
@@ -140,30 +174,24 @@
       }catch(e){}
     }
 
-    // --- Rapport PDF (auto impression)
+    // Rapport (PDF) robuste + auto-print
     function generateReport(){
-      const s=computeStats(); const now=new Date();
+      const s=computeStats(), now=new Date();
       const d=now.toLocaleString('fr-FR');
-      const fileSafe = now.toISOString().slice(0,19).replace(/[:T]/g,'-');
-      const title = `CyberAudit - Résultats NIS2 - ${fileSafe}`;
-
+      const fileSafeDate = now.toISOString().slice(0,19).replace(/[:T]/g,'-');
+      const reportTitle = `CyberAudit - Résultats NIS2 - ${fileSafeDate}`;
       const list=(arr,val)=> arr.filter(x=>x.val===val).sort((a,b)=> a.ref.localeCompare(b.ref));
+
       let html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
-      html+=`<title>${title}</title><style>
+      html+=`<title>${reportTitle}</title>`;
+      html+=`<style>
         :root{--ink:#0f172a;--muted:#64748b;--band:#f3f4f6}
         body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:20px;line-height:1.55;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-        h1{font-size:22px;margin:0 0 6px}
-        h2{margin:16px 0 8px}
-        h3{margin:12px 0 6px}
-        small{color:var(--muted)}
-        .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
-        table{border-collapse:collapse;width:100%;margin:8px 0}
-        th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
-        tr:nth-child(even){background:var(--band)}
-        .noprint{margin:6px 0 10px}
-        .page-break{break-after:page}
-        @page{size:A4;margin:14mm}
-        @media print {.noprint{display:none}}
+        h1{font-size:22px;margin:0 0 6px} h2{margin:16px 0 8px} h3{margin:12px 0 6px}
+        small{color:var(--muted)} .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
+        table{border-collapse:collapse;width:100%;margin:8px 0} th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
+        tr:nth-child(even){background:var(--band)} .noprint{margin:6px 0 10px} .page-break{break-after:page}
+        @page{size:A4;margin:14mm} @media print {.noprint{display:none}}
       </style></head><body>`;
 
       html+=`<h1>Résultats — NIS2 (13 domaines ENISA)</h1>
@@ -173,15 +201,11 @@
              <table><tr><th>Total</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Conformité (Oui)</th></tr>
              <tr><td>${s.global.total}</td><td>${s.global.yes}</td><td>${s.global.no}</td><td>${s.global.na}</td><td>${Math.round((s.global.yes/s.global.total)*100)}%</td></tr></table>`;
 
-      html+=`<h2>Détail par domaine</h2>
-             <table><tr><th>Domaine</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
-      (function(){
-        const map = new Map(DOMAINS.map(([code, title, items])=>[code,{title,tot:items.length}]));
-        Object.entries(s.perDomain).forEach(([code,dmn])=>{
-          const meta = map.get(code);
-          html+=`<tr><td>${code} — ${meta.title}</td><td>${dmn.yes}</td><td>${dmn.no}</td><td>${meta.tot-dmn.yes-dmn.no}</td><td>${meta.tot}</td></tr>`;
-        });
-      })();
+      html+=`<h2>Détail par domaine</h2><table><tr><th>Domaine</th><th>Oui</th><th>Non</th><th>Non répondu</th><th>Total</th></tr>`;
+      DOMAINS.forEach(([code,title,items])=>{
+        const g=s.perDomain[code];
+        html+=`<tr><td>${code} — ${title}</td><td>${g.yes}</td><td>${g.no}</td><td>${g.tot-g.yes-g.no}</td><td>${g.tot}</td></tr>`;
+      });
       html+='</table>';
 
       html+=`<div class="page-break"></div><h2>Mesures “Non” (à traiter)</h2>`;
@@ -189,11 +213,7 @@
         const arr=list(s.details.filter(x=>x.domain===code),'non');
         html+=`<h3>${code} — ${title} <span class="badge">${arr.length}</span></h3>`;
         if(arr.length===0){ html+='<div><small>Aucune.</small></div>'; }
-        else {
-          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
-          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
-          html+='</table>';
-        }
+        else{ html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; }
       });
 
       html+=`<div class="page-break"></div><h2>Mesures “Non répondu” (à compléter)</h2>`;
@@ -201,30 +221,21 @@
         const arr=list(s.details.filter(x=>x.domain===code),'na');
         html+=`<h3>${code} — ${title} <span class="badge">${arr.length}</span></h3>`;
         if(arr.length===0){ html+='<div><small>Complet.</small></div>'; }
-        else {
-          html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>';
-          arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`);
-          html+='</table>';
-        }
+        else{ html+='<table><tr><th>Réf.</th><th>Intitulé</th></tr>'; arr.forEach(x=> html+=`<tr><td>${x.ref}</td><td>${x.text}</td></tr>`); html+='</table>'; }
       });
 
       html+=`<script>
-        document.title = ${JSON.stringify(title)};
-        window.addEventListener('load', () => setTimeout(()=>{ try{ window.print(); }catch(e){} }, 250));
-        window.addEventListener('afterprint', ()=>{ try{ window.close(); }catch(e){} });
+        document.title = ${JSON.stringify(reportTitle)};
+        window.addEventListener('load', () => { setTimeout(() => { try{ window.print(); }catch(e){} }, 250); });
+        window.addEventListener('afterprint', () => { try{ window.close(); }catch(e){} });
       <\/script></body></html>`;
 
-      const win = window.open('about:blank', '_blank', 'noopener,noreferrer');
-      if(!win){
-        const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-        window.location.href = dataUrl;
-        return;
-      }
-      win.document.open(); win.document.write(html); win.document.close();
-      try{ win.focus(); }catch(e){}
+      const win = window.open('about:blank','_blank','noopener,noreferrer');
+      if(!win){ const dataUrl='data:text/html;charset=utf-8,'+encodeURIComponent(html); window.location.href=dataUrl; return; }
+      win.document.open(); win.document.write(html); win.document.close(); try{ win.focus(); }catch(e){}
     }
 
-    // --- CSV : BOM + Safari/iOS + révocation différée
+    // CSV (BOM + Safari/iOS)
     function exportCSV(){
       const {details}=computeStats();
       const rows=[["Ref","Domaine","Intitulé","Réponse"]];
@@ -241,14 +252,17 @@
     function resetAll(){
       if(!confirm('Supprimer toutes les réponses enregistrées ?')) return;
       document.querySelectorAll('.controls li').forEach(li=>{
-        const ref=li.dataset.ref; localStorage.removeItem(LS_PREFIX+ref);
+        const ref=li.dataset.ref;
+        localStorage.removeItem(LS_PREFIX+ref);
         li.querySelectorAll('input[type="radio"]').forEach(i=> i.checked=false);
       });
       updateStats();
     }
 
+    // Init fiable (mobile/iframe)
     window.addEventListener('DOMContentLoaded', ()=>{
-      renderDomains(); updateStats();
+      renderDomains();
+      updateStats();
       document.getElementById('btn-report')?.addEventListener('click', generateReport);
       document.getElementById('btn-csv')?.addEventListener('click', exportCSV);
       document.getElementById('btn-reset')?.addEventListener('click', resetAll);
@@ -257,3 +271,4 @@
   </script>
 </body>
 </html>
+``
